@@ -18,13 +18,6 @@ public class KeywordMachine extends compiler.StateMachine {
         }
         compiler.State endState = new compiler.State(String.valueOf(this.keyword.length()), true);
         addState(endState);
-        // compiler.State startState = new compiler.State("start", false);
-        // startState.addTransition('A', "start");
-        // startState.addTransition('B', "expectB");
-        // addState(startState);
-        // compiler.State expectBState = new compiler.State("expectB", true);
-        // expectBState.addTransition('B', "expectB");
-        // addState(expectBState);
     }
 
     @Override
