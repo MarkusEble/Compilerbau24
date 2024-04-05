@@ -36,11 +36,11 @@ public class GanzzahlMachine extends compiler.StateMachine {
         return "start";
     }
 
-/*
+
     public compiler.TokenIntf.Type getType() {
         return compiler.TokenIntf.Type.EOF;
     }
-*/
+
 
 }
 
