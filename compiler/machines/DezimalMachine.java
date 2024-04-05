@@ -18,18 +18,30 @@ public class DezimalMachine extends compiler.StateMachine{
         startState.addTransition('9',"start");
         startState.addTransition('.',"expectedValueAfterPoint");
         addState(startState);
-        compiler.State expectedValueAfterPointState = new compiler.State("expectedValueAfterPoint",true);
-        expectedValueAfterPointState.addTransition('0',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('1',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('2',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('3',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('4',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('5',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('6',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('7',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('8',"expectedValueAfterPoint");
-        expectedValueAfterPointState.addTransition('9',"expectedValueAfterPoint");
+        compiler.State expectedValueAfterPointState = new compiler.State("expectedValueAfterPoint",false);
+        expectedValueAfterPointState.addTransition('0',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('1',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('2',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('3',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('4',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('5',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('6',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('7',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('8',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('9',"expectedMoreOrFinal");
         addState(expectedValueAfterPointState);
+        compiler.State expectedMoreOrFinalState = new compiler.State("expectedMoreOrFinal", true);
+        expectedValueAfterPointState.addTransition('0',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('1',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('2',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('3',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('4',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('5',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('6',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('7',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('8',"expectedMoreOrFinal");
+        expectedValueAfterPointState.addTransition('9',"expectedMoreOrFinal");
+        addState(expectedMoreOrFinalState);
     }
 
     @Override
