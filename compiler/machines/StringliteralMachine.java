@@ -1,5 +1,7 @@
 package compiler.machines;
 
+import compiler.TokenIntf;
+
 public class StringliteralMachine extends compiler.StateMachine{
     public void initStateTable() {
         compiler.State startState = new compiler.State("start", false);
@@ -20,7 +22,7 @@ public class StringliteralMachine extends compiler.StateMachine{
     }
 
     public compiler.TokenIntf.Type getType() {
-        return compiler.TokenIntf.Type.EOF;
+        return TokenIntf.Type.STRING;
     }
 
 }
