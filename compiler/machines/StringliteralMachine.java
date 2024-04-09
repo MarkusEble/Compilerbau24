@@ -20,7 +20,7 @@ public class StringliteralMachine extends compiler.StateMachine{
     }
 
     public compiler.TokenIntf.Type getType() {
-        return compiler.TokenIntf.Type.EOF;
+        return compiler.TokenIntf.Type.STRING;
     }
 
 }
