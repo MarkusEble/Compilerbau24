@@ -2,9 +2,11 @@ package compiler.machines;
 
 public class KeywordMachine extends compiler.StateMachine {
     private String keyword;
+    private compiler.TokenIntf.Type tokenType;
 
-    public KeywordMachine(String keyword) {
+    public KeywordMachine(String keyword, compiler.TokenIntf.Type tokenType) {
         this.keyword = keyword;
+        this.tokenType = tokenType;
     }
 
     public void initStateTable() {
@@ -26,7 +28,7 @@ public class KeywordMachine extends compiler.StateMachine {
     }
 
     public compiler.TokenIntf.Type getType() {
-        return compiler.TokenIntf.Type.EOF;
+        return tokenType;
     }
 
 }
