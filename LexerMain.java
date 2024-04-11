@@ -6,7 +6,7 @@ public class LexerMain {
         compiler.Lexer lexer = new compiler.Lexer();
         OutputStreamWriter outStream = new OutputStreamWriter(System.out, "UTF-8");
 
-        lexer.processInput("3.4 AB WHILE", outStream);
+        lexer.processInput("0 45 AB", outStream);
         lexer.processInput("/* */ A 45", outStream);
     }
 
