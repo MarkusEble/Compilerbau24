@@ -56,7 +56,7 @@ public class TestSuite implements TestSuiteIntf {
     }
 
     private test.TestCaseContent parseTestCase(compiler.InputReader inputReader) throws Exception {
-        return testCaseContent;
+        return new TestCaseContent(parseInput(inputReader), parseExpectedOutput(inputReader));
     }
 
     private void parseDollarIn(compiler.InputReader inputReader) throws Exception {
@@ -67,13 +67,25 @@ public class TestSuite implements TestSuiteIntf {
     }
 
     private String parseInput(compiler.InputReader inputReader) throws Exception {
+        parseDollarIn(inputReader);
+        String input = new String();
+        while (inputReader.lookAheadChar() != '$' && inputReader.lookAheadChar() != 0) {
+            input += inputReader.lookAheadChar();
+            inputReader.advance();
+        }
         return input;
     }
 
     private void parseDollarOut(compiler.InputReader inputReader) throws Exception {
+        inputReader.expect('$');
+        inputReader.expect('O');
+        inputReader.expect('U');
+        inputReader.expect('T');
+        inputReader.expect('\n');
     }
     
     private String parseExpectedOutput(compiler.InputReader inputReader) throws Exception {
+        parseDollarOut(inputReader);
         String expectedOutput = new String();
         while (inputReader.lookAheadChar() != '$' && inputReader.lookAheadChar() != 0) {
             expectedOutput += inputReader.lookAheadChar();
