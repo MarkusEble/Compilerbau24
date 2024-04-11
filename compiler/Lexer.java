@@ -91,7 +91,7 @@ public class Lexer implements LexerIntf {
         addKeywordMachine("DEFAULT", compiler.TokenIntf.Type.DEFAULT);
         
         // ...        
-        //addMachine(new compiler.machines.IdentifierMachine());
+        addMachine(new compiler.machines.IdentifierMachine());
     }
 
     public void addMachine(StateMachineIntf machine) {
