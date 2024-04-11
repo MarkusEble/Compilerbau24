@@ -115,7 +115,7 @@ public class Lexer implements LexerIntf {
     }
 
     public Token nextWord() throws Exception {
-      // while any machine is ok
+        // while any machine is ok
         // for each machine
           // skip machines which already have failed
           // proceed to next character/next step
@@ -124,8 +124,46 @@ public class Lexer implements LexerIntf {
         // end for each machine
       // end while any machine is ok
         // look for longest match
+
+        String remaining = m_input.getRemaining();
+        int firstLine = m_input.getLine();
+        int firstCol = m_input.getCol();
+
+        int counter = 0;
+        boolean anyMachineOk = true;
+        while(anyMachineOk){
+            anyMachineOk = false;
+            for (MachineInfo machine : m_machineList) {
+                if(machine.m_machine.isFinished() && !machine.m_machine.isFinalState())
+                    continue;
+                machine.m_machine.step();
+                if(machine.m_machine.isFinalState()){
+                    machine.m_acceptPos = counter;
+                }else{
+                    anyMachineOk = true;
+                }
+
+            }
+            counter++;
+        }
+        MachineInfo longestMatch = m_machineList.get(0);
+        for (MachineInfo machineInfo : m_machineList) {
+            if(machineInfo.m_acceptPos > longestMatch.m_acceptPos){
+                longestMatch = machineInfo;
+            }
+        }
+
+        Token token = new Token();
+        token.m_type = longestMatch.m_machine.getType();
+        token.m_value = remaining.substring(0, longestMatch.m_acceptPos);
+        token.m_firstLine = firstLine;
+        token.m_lastLine = m_input.getLine();
+        token.m_firstCol = firstCol;
+        token.m_lastCol = m_input.getCol();
+
         return token;
     }
+
 
     public void processInput(String input, OutputStreamWriter outStream) throws Exception {
         m_input = new MultiLineInputReader(input);
