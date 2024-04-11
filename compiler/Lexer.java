@@ -38,6 +38,7 @@ public class Lexer implements LexerIntf {
         addMachine(new compiler.machines.DezimalMachine());
         addMachine(new compiler.machines.StringliteralMachine());
         addMachine(new compiler.machines.CharliteralMachine());
+        addMachine(new compiler.machines.BlockkommentarMachine());
         addMachine(new compiler.machines.PythonCommentMachine());
         addKeywordMachine("*", compiler.TokenIntf.Type.MUL);
         addKeywordMachine("/", compiler.TokenIntf.Type.DIV);
