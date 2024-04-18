@@ -25,7 +25,17 @@ public class ExpressionEvaluator {
     }
 
     int getDashExpr() throws Exception {
-        return getArrowExpr();
+
+        // dashExp : arrowExpr (TDASH arrowExpr)*
+        int result = getArrowExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.TDASH) {
+            m_lexer.advance(); // consume TDASH
+            int rhsOperand = getArrowExpr();
+            result = (int) Math.pow(result, rhsOperand);
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
 
     int getUnaryExpr() throws Exception {
