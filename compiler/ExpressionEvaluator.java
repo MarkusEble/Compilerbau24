@@ -29,6 +29,23 @@ public class ExpressionEvaluator {
     }
 
     int getUnaryExpr() throws Exception {
+        // unaryExpr : (MINUS,NOT) DashExpr
+        Token nextToken = m_lexer.lookAhead();
+
+        if (nextToken.m_type == TokenIntf.Type.MINUS || nextToken.m_type == TokenIntf.Type.NOT) {
+            m_lexer.advance();
+
+            int result = getDashExpr();
+
+            if (nextToken.m_type == TokenIntf.Type.NOT) {
+                result = result > 0 ? 0 : 1;
+            } else if (nextToken.m_type == TokenIntf.Type.MINUS) {
+                result = -result;
+            }
+
+            return result;
+        }
+
         return getDashExpr();
     }
     
