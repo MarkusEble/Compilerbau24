@@ -69,6 +69,27 @@ public class ExpressionEvaluator {
     }
 
     int getQuestionMarkExpr() throws Exception {
-        return getAndOrExpr();
+        // getQuestionMark = AndOrExpr ? AndOrExpr : AndOrExpr
+        int condition = getAndOrExpr();
+        Token nextToken = m_lexer.lookAhead();
+        if(nextToken.m_type == TokenIntf.Type.QUESTIONMARK){
+            m_lexer.advance();
+            int result1 = getQuestionMarkExpr();
+            int result2;
+
+            nextToken = m_lexer.lookAhead();
+            if(nextToken.m_type == TokenIntf.Type.DOUBLECOLON){
+                m_lexer.advance();
+                result2 = getQuestionMarkExpr();
+            } else {
+                throw new Exception("QuestionMarkExpression Error: expected double Column");
+            }
+
+
+            // semantik
+            return condition > 0 ? result1 : result2;
+        }
+
+        return condition;
     }
 }
