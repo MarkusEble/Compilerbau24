@@ -69,7 +69,23 @@ public class ExpressionEvaluator {
     }
 
     int getBitAndOrExpr() throws Exception {
-        return getPlusMinusExpr();
+        // NUMBER ((BITAND | BITOR) NUMBER)*
+        // plusMinusExpr ((BITAND | BITOR) plusMinusExpr)*
+        int result = getPlusMinusExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.BITAND ||
+            nextToken.m_type == TokenIntf.Type.BITOR) {
+            // consume BITAND|BITOR
+            m_lexer.advance();
+            int rhsOperand = getPlusMinusExpr();
+            if (nextToken.m_type == TokenIntf.Type.BITAND) {
+                result = result & rhsOperand;
+            } else {
+                result = result | rhsOperand;
+            }
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
 
     int getShiftExpr() throws Exception {
