@@ -29,7 +29,7 @@ public class ExpressionEvaluator {
         // dashExp : arrowExpr (TDASH arrowExpr)*
         int result = getArrowExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type == TokenIntf.Type.TDASH) {
+        while (nextToken.m_type == TokenIntf.Type.DASH) {
             m_lexer.advance(); // consume TDASH
             int rhsOperand = getArrowExpr();
             result = (int) Math.pow(result, rhsOperand);
