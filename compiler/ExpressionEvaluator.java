@@ -46,7 +46,20 @@ public class ExpressionEvaluator {
     }
     
     int getPlusMinusExpr() throws Exception {
-        int result = getMulDivExpr();
+        // plusMinusExpr : mulDivExpr ((PLUS|MINUS) mulDivExpr)*
+        int result = getMulDivExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.PLUS ||
+            nextToken.m_type == TokenIntf.Type.MINUS) {
+            m_lexer.advance(); // consume PLUS|MINUS
+            int rhsOperand = getMulDivExpr();
+            if (nextToken.m_type == TokenIntf.Type.PLUS) {
+                result = result + rhsOperand;
+            } else {
+                result = result - rhsOperand;
+            }
+            nextToken = m_lexer.lookAhead();
+        }
         return result;
     }
 
