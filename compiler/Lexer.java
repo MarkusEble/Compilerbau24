@@ -3,13 +3,8 @@ package compiler;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 
-import compiler.machines.CharliteralMachine;
-import compiler.machines.DezimalMachine;
-import compiler.machines.GanzzahlMachine;
-import compiler.machines.KeywordMachine;
-import compiler.machines.ZeilenkommentarMachine;
-import compiler.machines.WhitespaceMachine;
-import compiler.machines.StringliteralMachine;
+
+
 
 public class Lexer implements LexerIntf {
 
@@ -39,13 +34,12 @@ public class Lexer implements LexerIntf {
     }
 
     private void addLexerMachines() {
-        addMachine(new compiler.machines.BlockkommentarMachine());
-        addMachine(new compiler.machines.CharliteralMachine());
         addMachine(new compiler.machines.GanzzahlMachine());
-        addMachine(new compiler.machines.LineCommentMachine());
-        addMachine(new compiler.machines.PythonCommentMachine());
-        addMachine(new compiler.machines.WhitespaceMachine());
+        addMachine(new compiler.machines.DezimalMachine());
         addMachine(new compiler.machines.StringliteralMachine());
+        addMachine(new compiler.machines.CharliteralMachine());
+        addMachine(new compiler.machines.BlockkommentarMachine());
+        addMachine(new compiler.machines.PythonCommentMachine());
         addKeywordMachine("*", compiler.TokenIntf.Type.MUL);
         addKeywordMachine("/", compiler.TokenIntf.Type.DIV);
         addKeywordMachine("+", compiler.TokenIntf.Type.PLUS);
@@ -66,6 +60,8 @@ public class Lexer implements LexerIntf {
         addKeywordMachine(")", compiler.TokenIntf.Type.RPAREN);
         addKeywordMachine("{", compiler.TokenIntf.Type.LBRACE);
         addKeywordMachine("}", compiler.TokenIntf.Type.RBRACE);
+        addMachine(new compiler.machines.ZeilenkommentarMachine());
+        addMachine(new compiler.machines.WhitespaceMachine());
         addKeywordMachine(";", compiler.TokenIntf.Type.SEMICOLON);
         addKeywordMachine(",", compiler.TokenIntf.Type.COMMA);
         addKeywordMachine("=", compiler.TokenIntf.Type.ASSIGN);
@@ -90,7 +86,6 @@ public class Lexer implements LexerIntf {
         addKeywordMachine("BLOCK", compiler.TokenIntf.Type.BLOCK);
         addKeywordMachine("DEFAULT", compiler.TokenIntf.Type.DEFAULT);
         
-        // ...        
         addMachine(new compiler.machines.IdentifierMachine());
     }
 
@@ -99,7 +94,7 @@ public class Lexer implements LexerIntf {
     }
 
     public void addKeywordMachine(String keyword, TokenIntf.Type tokenType) {
-        m_machineList.add(new MachineInfo(new KeywordMachine(keyword, tokenType)));
+        m_machineList.add(new MachineInfo(new compiler.machines.KeywordMachine(keyword, tokenType)));
     }
 
     public void initMachines(String input) {
@@ -115,15 +110,66 @@ public class Lexer implements LexerIntf {
     }
 
     public Token nextWord() throws Exception {
-      // while any machine is ok
-        // for each machine
-          // skip machines which already have failed
-          // proceed to next character/next step
-          // check if machine would accept
-             // update accept pos
-        // end for each machine
-      // end while any machine is ok
-        // look for longest match
+        // check end of file
+        if (m_input.isEmpty()) {
+            Token token = new Token();
+            token.m_type = Token.Type.EOF;
+            token.m_value = new String();
+            return token;
+        }
+        int curPos = 0;
+        // initialize machines
+        initMachines(m_input.getRemaining());
+        // while some machine are in process
+        boolean machineActive;
+        do {
+            machineActive = false;
+            // for each machine in process
+            for (MachineInfo machine : m_machineList) {
+                if (machine.m_machine.isFinished()) {
+                    continue;
+                }
+                machineActive = true;
+                // next step
+                machine.m_machine.step();
+                // if possible final state
+                if (machine.m_machine.isFinalState()) {
+                    // update last position machine would accept
+                    machine.m_acceptPos = curPos + 1;
+                }
+            } // end for each machine in process
+            curPos++;
+        } while (machineActive); // end while some machine in process
+        // select first machine with largest final pos (greedy)
+        MachineInfo bestMatch = new MachineInfo(null);
+        for (MachineInfo machine : m_machineList) {
+            if (machine.m_acceptPos > bestMatch.m_acceptPos) {
+                bestMatch = machine;
+            }
+        }
+        // throw in case of error
+        if (bestMatch.m_machine == null) {
+            throw new CompilerException("Illegal token", m_input.getLine(), m_input.getMarkedCodeSnippetCurrentPos(), null);
+        }
+        // set next word [start pos, final pos)
+        Token token = new Token();
+        token.m_firstLine = m_input.getLine();
+        token.m_firstCol = m_input.getCol();
+        String nextWord = m_input.advanceAndGet(bestMatch.m_acceptPos);
+        token.m_lastLine = m_input.getLine();
+        token.m_lastCol = m_input.getCol();
+        token.m_type = bestMatch.m_machine.getType();
+        token.m_value = nextWord;
+        return token;
+    }
+
+    public Token nextToken() throws Exception {
+        Token token = nextWord();
+        while (token.m_type == Token.Type.WHITESPACE ||
+                token.m_type == Token.Type.MULTILINECOMMENT ||
+                token.m_type == Token.Type.LINECOMMENT) {
+            token = nextWord();
+        }
         return token;
     }
 
@@ -154,7 +200,7 @@ public class Lexer implements LexerIntf {
     }
 
     public void advance() throws Exception {
-        m_currentToken = nextWord();
+        m_currentToken = nextToken();
     }
 
     public void expect(Token.Type tokenType) throws Exception {
