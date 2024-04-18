@@ -33,7 +33,21 @@ public class ExpressionEvaluator {
     }
     
     int getMulDivExpr() throws Exception {
-        return getUnaryExpr();
+        // mulDivExpr: unaryExpr ((MUL | DIV) unaryExpr )*
+        int result = getUnaryExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.MUL || nextToken.m_type == TokenIntf.Type.DIV ){
+            m_lexer.advance(); // consume DIV | MUL
+            int rhsOperand = getUnaryExpr();
+
+            if (nextToken.m_type == TokenIntf.Type.MUL) {
+                result = result * rhsOperand;
+            } else {
+                result = result / rhsOperand;
+            }
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
     
     int getPlusMinusExpr() throws Exception {
