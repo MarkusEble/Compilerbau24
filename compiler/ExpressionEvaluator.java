@@ -13,9 +13,20 @@ public class ExpressionEvaluator {
     }
     
     int getParantheseExpr() throws Exception {
-        Token curToken = m_lexer.lookAhead();
-        m_lexer.expect(Token.Type.INTEGER);
-        return Integer.valueOf(curToken.m_value);
+        // parentheseExpr : NUMBER | LParen sumExpr RParen
+
+        Token token = m_lexer.lookAhead();
+        // parentheseExpr : NUMBER
+        if (m_lexer.accept(TokenIntf.Type.INTEGER)) { // consume NUMBER
+            return Integer.parseInt(token.m_value);
+        }
+        else {
+        // parentheseExpr : LParen sumExpr RParen
+            m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
+            int result = getPlusMinusExpr(); //sumExpr
+            m_lexer.expect(TokenIntf.Type.RPAREN); //consume Rparen
+            return result;
+        }
     }
     
     int getArrowExpr() throws Exception {
