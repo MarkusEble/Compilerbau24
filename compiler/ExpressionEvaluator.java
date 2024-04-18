@@ -1,5 +1,7 @@
 package compiler;
 
+import compiler.TokenIntf.Type;
+
 public class ExpressionEvaluator {
     private Lexer m_lexer;
     
@@ -57,7 +59,20 @@ public class ExpressionEvaluator {
     }
 
     int getShiftExpr() throws Exception {
-        return getBitAndOrExpr();
+        // shiftExpr : bitAndOrExpr ((SHIFTRIGHT|SHIFTLEFT) bitAndOrExpr)*
+        int result = getBitAndOrExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == Type.SHIFTLEFT || nextToken.m_type == Type.SHIFTRIGHT) {
+            m_lexer.advance();
+            int rhsOperand = getBitAndOrExpr();
+            if (nextToken.m_type == Type.SHIFTLEFT) {
+                result = result << rhsOperand;
+            } else {
+                result = result >> rhsOperand;
+            }
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
 
     int getCompareExpr() throws Exception {
