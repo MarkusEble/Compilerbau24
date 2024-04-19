@@ -25,7 +25,7 @@ public class ExpressionEvaluator {
         else {
         // parentheseExpr : LParen sumExpr RParen
             m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
-            int result = getPlusMinusExpr(); //sumExpr
+            int result = getQuestionMarkExpr(); //sumExpr
             m_lexer.expect(TokenIntf.Type.RPAREN); //consume Rparen
             return result;
         }
