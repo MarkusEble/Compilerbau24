@@ -4,16 +4,16 @@ import compiler.TokenIntf.Type;
 
 public class ExpressionEvaluator {
     private Lexer m_lexer;
-    
+
     public ExpressionEvaluator(Lexer lexer) {
         m_lexer = lexer;
     }
-    
+
     public int eval(String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
     }
-    
+
     int getParantheseExpr() throws Exception {
         // parentheseExpr : NUMBER | LParen sumExpr RParen
 
@@ -30,7 +30,7 @@ public class ExpressionEvaluator {
             return result;
         }
     }
-    
+
     int getArrowExpr() throws Exception {
         return getParantheseExpr();
     }
@@ -40,7 +40,7 @@ public class ExpressionEvaluator {
         // dashExp : arrowExpr (TDASH arrowExpr)*
         int result = getArrowExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type == TokenIntf.Type.TDASH) {
+        while (nextToken.m_type == TokenIntf.Type.DASH) {
             m_lexer.advance(); // consume TDASH
             int rhsOperand = getArrowExpr();
             result = (int) Math.pow(result, rhsOperand);
@@ -69,7 +69,7 @@ public class ExpressionEvaluator {
 
         return getDashExpr();
     }
-    
+
     int getMulDivExpr() throws Exception {
         // mulDivExpr: unaryExpr ((MUL | DIV) unaryExpr )*
         int result = getUnaryExpr(); // lhsOperand
@@ -87,13 +87,13 @@ public class ExpressionEvaluator {
         }
         return result;
     }
-    
+
     int getPlusMinusExpr() throws Exception {
         // plusMinusExpr : mulDivExpr ((PLUS|MINUS) mulDivExpr)*
         int result = getMulDivExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.PLUS ||
-            nextToken.m_type == TokenIntf.Type.MINUS) {
+                nextToken.m_type == TokenIntf.Type.MINUS) {
             m_lexer.advance(); // consume PLUS|MINUS
             int rhsOperand = getMulDivExpr();
             if (nextToken.m_type == TokenIntf.Type.PLUS) {
@@ -148,7 +148,21 @@ public class ExpressionEvaluator {
     }
 
     int getAndOrExpr() throws Exception {
-        return getCompareExpr();
+        // AndOrExpr : CompareExpr ("&&"" | "||") CompareExpr
+        int result = getCompareExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.OR ||
+                nextToken.m_type == TokenIntf.Type.AND) {
+            m_lexer.advance(); // consume AND or OR
+            int rhsOperand = getCompareExpr();
+            if (nextToken.m_type == TokenIntf.Type.OR) {
+                result = result == 1 || rhsOperand == 1 ? 1 : 0;
+            } else {
+                result = result == 1 && rhsOperand == 1 ? 1 : 0;
+            }
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
 
     int getQuestionMarkExpr() throws Exception {

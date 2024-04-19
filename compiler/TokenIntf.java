@@ -28,6 +28,8 @@ public abstract class TokenIntf {
         OR,
         QUESTIONMARK,
         DOUBLECOLON,
+		DASH,
+		ARROW,
 		LINECOMMENT,
 		MULTILINECOMMENT,
 		WHITESPACE,
