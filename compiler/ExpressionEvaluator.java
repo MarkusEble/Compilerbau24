@@ -32,6 +32,19 @@ public class ExpressionEvaluator {
     }
 
     int getArrowExpr() throws Exception {
+        //arrowExpr: ParantheseExpr ARROW ParantheseExpr
+        int lParenExpr = getParantheseExpr();
+        m_lexer.advance();
+        if (m_lexer.lookAhead().m_type == Type.ARROW){
+            m_lexer.advance();
+            int rParenExpr = getParantheseExpr();
+            if (lParenExpr>=rParenExpr){
+                return lParenExpr-rParenExpr;
+            }else{
+                return lParenExpr+rParenExpr;
+            }
+        }
+
         return getParantheseExpr();
     }
 
