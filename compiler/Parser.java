@@ -44,7 +44,12 @@ public class Parser {
     }
 
     ASTExprNode getUnaryExpr() throws Exception {
-       return getDashExpr();
+        Token nextToken = m_lexer.lookAhead();
+        if (nextToken.m_type == Type.MINUS || nextToken.m_type == Type.NOT) {
+            m_lexer.advance();
+            return new ASTUnaryExprNode(getDashExpr(), nextToken.m_type);
+        }
+        return getDashExpr();
     }
     
     ASTExprNode getMulDivExpr() throws Exception {
