@@ -22,7 +22,9 @@ public class Parser {
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        return new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
+        ASTExprNode result = new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
+        m_lexer.advance();
+        return result;
     }
     
     ASTExprNode getArrowExpr() throws Exception {
