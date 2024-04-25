@@ -22,7 +22,9 @@ public class Parser {
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        return new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
+        ASTExprNode result = new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
+        m_lexer.advance();
+        return result;
     }
     
     ASTExprNode getArrowExpr() throws Exception {
@@ -54,7 +56,18 @@ public class Parser {
     }
 
     ASTExprNode getCompareExpr() throws Exception {
-        return getShiftExpr();
+        ASTExprNode result = getMulDivExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.GREATER ||
+                nextToken.m_type == TokenIntf.Type.LESS ||
+                nextToken.m_type == TokenIntf.Type.EQUAL) {
+            m_lexer.advance();
+            ASTExprNode rhsOperand = getShiftExpr();
+            result = new ASTExprCompNode(result, nextToken, rhsOperand);
+            nextToken = m_lexer.lookAhead();
+        }
+
+        return result;
     }
 
     ASTExprNode getAndOrExpr() throws Exception {
