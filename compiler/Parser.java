@@ -96,7 +96,20 @@ public class Parser {
     }
 
     ASTExprNode getShiftExpr() throws Exception {
-        return getBitAndOrExpr();
+        ASTExprNode result = getBitAndOrExpr();
+        m_lexer.advance();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == Type.SHIFTLEFT || nextToken.m_type == Type.SHIFTRIGHT) {
+            ASTShiftExprNode temp = new ASTShiftExprNode();
+            temp.lhsOperand = result;
+            temp.shiftKeyword = nextToken;
+            m_lexer.advance();
+            temp.rhsOperand = getBitAndOrExpr();
+            m_lexer.advance();
+            result = temp;
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
 
     ASTExprNode getCompareExpr() throws Exception {
