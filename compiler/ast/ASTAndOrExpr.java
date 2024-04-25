@@ -6,13 +6,10 @@ public class ASTAndOrExpr extends ASTExprNode {
     ASTExprNode lhs, rhs;
     boolean isOr;
 
-    public ASTAndOrExpr(boolean or, ASTExprNode left) {
+    public ASTAndOrExpr(boolean or, ASTExprNode left, ASTExprNode right) {
         this.lhs = left;
         this.isOr = or;
-    }
-
-    public void setRightNode(ASTExprNode rightNode) {
-        this.rhs = rightNode;
+        this.rhs = right;
     }
 
     @Override

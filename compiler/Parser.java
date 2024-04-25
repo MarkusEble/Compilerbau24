@@ -129,8 +129,7 @@ public class Parser {
     }
 
     ASTExprNode getAndOrExpr() throws Exception {
-        ASTExprNode start = getPlusMinusExpr(); // lhsOperand
-        ASTAndOrExpr left = null;
+        ASTExprNode left = getPlusMinusExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.BITAND ||
                 nextToken.m_type == TokenIntf.Type.BITOR) {
@@ -138,12 +137,7 @@ public class Parser {
             m_lexer.advance();
             ASTExprNode rhsOperand = getPlusMinusExpr();
             boolean isOr = nextToken.m_type != TokenIntf.Type.BITAND;
-            if (left == null) {
-                left = new ASTAndOrExpr(isOr, start);
-            } else {
-                left = new ASTAndOrExpr(isOr, left);
-                left.setRightNode(rhsOperand);
-            }
+            left = new ASTAndOrExpr(isOr, left, rhsOperand);
             nextToken = m_lexer.lookAhead();
         }
         return left;
