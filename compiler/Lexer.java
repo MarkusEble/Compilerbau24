@@ -175,6 +175,7 @@ public class Lexer implements LexerIntf {
         return token;
     }
 
+
     public void processInput(String input, OutputStreamWriter outStream) throws Exception {
         m_input = new MultiLineInputReader(input);
         // while input available
