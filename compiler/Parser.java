@@ -22,9 +22,20 @@ public class Parser {
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        ASTExprNode result = new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
-        m_lexer.advance();
-        return result;
+        // parentheseExpr : NUMBER | LParen sumExpr RParen
+
+        Token token = m_lexer.lookAhead();
+        // parentheseExpr : NUMBER
+        if (m_lexer.accept(TokenIntf.Type.INTEGER)) { // consume NUMBER
+            return new ASTIntegerLiteralNode(token.m_value);
+        }
+        else {
+            // parentheseExpr : LParen sumExpr RParen
+            m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
+            ASTExprNode result = new ASTParantheseNode(getQuestionMarkExpr()); //sumExpr
+            m_lexer.expect(TokenIntf.Type.RPAREN); //consume Rparen
+            return result;
+        }
     }
 
     ASTExprNode getArrowExpr() throws Exception {
