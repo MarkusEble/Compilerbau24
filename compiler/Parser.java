@@ -50,25 +50,6 @@ public class Parser {
     }
 
     ASTExprNode getShiftExpr() throws Exception {
-        // shiftExpr : bitAndOrExpr ((SHIFTRIGHT|SHIFTLEFT) bitAndOrExpr)*
-//        ASTExprNode shiftExprNode = new ASTShiftExprNode();
-//        ASTExprNode result;
-//        result = getBitAndOrExpr();
-//        shiftExprNode.lhsOperand = getBitAndOrExpr();
-//        Token token = m_lexer.lookAhead();
-//        while (token.m_type == Type.SHIFTLEFT || token.m_type == Type.SHIFTRIGHT) {
-//            m_lexer.advance();
-//            shiftExprNode.rhsOperand = getBitAndOrExpr();
-////            if (shiftExprNode.shiftKeyword.m_type == Type.SHIFTLEFT) {
-////                result = result << rhsOperand;
-////            } else {
-////                result = result >> rhsOperand;
-////            }
-//            shiftExprNode.shiftKeyword = m_lexer.lookAhead();
-//        }
-//        return shiftExprNode;
-
-
         ASTExprNode result = getBitAndOrExpr();
         m_lexer.advance();
         Token nextToken = m_lexer.lookAhead();
