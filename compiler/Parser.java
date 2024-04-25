@@ -32,7 +32,15 @@ public class Parser {
     }
 
     ASTExprNode getDashExpr() throws Exception {
-        return getArrowExpr();
+        ASTExprNode lhsOperand = getArrowExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.DASH) {
+            m_lexer.advance();
+            ASTExprNode rhsOperand = getArrowExpr();
+            lhsOperand = new ASTDashNode(lhsOperand, rhsOperand);
+            nextToken = m_lexer.lookAhead();
+        }
+        return lhsOperand;
     }
 
     ASTExprNode getUnaryExpr() throws Exception {
