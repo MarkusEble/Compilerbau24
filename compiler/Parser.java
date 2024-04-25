@@ -106,7 +106,6 @@ public class Parser {
 
     ASTExprNode getShiftExpr() throws Exception {
         ASTExprNode result = getBitAndOrExpr();
-        m_lexer.advance();
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == Type.SHIFTLEFT || nextToken.m_type == Type.SHIFTRIGHT) {
             ASTShiftExprNode temp = new ASTShiftExprNode();
@@ -114,7 +113,6 @@ public class Parser {
             temp.shiftKeyword = nextToken;
             m_lexer.advance();
             temp.rhsOperand = getBitAndOrExpr();
-            m_lexer.advance();
             result = temp;
             nextToken = m_lexer.lookAhead();
         }
@@ -122,7 +120,7 @@ public class Parser {
     }
 
     ASTExprNode getCompareExpr() throws Exception {
-        ASTExprNode result = getMulDivExpr(); // lhsOperand
+        ASTExprNode result = getShiftExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.GREATER ||
                 nextToken.m_type == TokenIntf.Type.LESS ||
@@ -137,13 +135,13 @@ public class Parser {
     }
 
     ASTExprNode getAndOrExpr() throws Exception {
-        ASTExprNode left = getPlusMinusExpr(); // lhsOperand
+        ASTExprNode left = getCompareExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.BITAND ||
                 nextToken.m_type == TokenIntf.Type.BITOR) {
             // consume BITAND|BITOR
             m_lexer.advance();
-            ASTExprNode rhsOperand = getPlusMinusExpr();
+            ASTExprNode rhsOperand = getCompareExpr();
             boolean isOr = nextToken.m_type != TokenIntf.Type.BITAND;
             left = new ASTAndOrExpr(isOr, left, rhsOperand);
             nextToken = m_lexer.lookAhead();
