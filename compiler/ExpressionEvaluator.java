@@ -193,7 +193,7 @@ public class ExpressionEvaluator {
     }
 
     int getQuestionMarkExpr() throws Exception {
-        // getQuestionMark = AndOrExpr ? AndOrExpr : AndOrExpr
+        // getQuestionMark = AndOrExpr ? QuestionMarkExpr : QuestionMarkExpr
         int condition = getAndOrExpr();
         Token nextToken = m_lexer.lookAhead();
         if(nextToken.m_type == TokenIntf.Type.QUESTIONMARK){
@@ -206,7 +206,7 @@ public class ExpressionEvaluator {
                 m_lexer.advance();
                 result2 = getQuestionMarkExpr();
             } else {
-                throw new Exception("QuestionMarkExpression Error: expected double Column");
+                throw new Exception("QuestionMarkExpression Error: expected double Colon");
             }
 
 

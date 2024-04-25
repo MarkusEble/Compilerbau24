@@ -1,4 +1,5 @@
 package compiler;
+
 import compiler.TokenIntf.Type;
 import compiler.ast.*;
 
@@ -10,7 +11,7 @@ public class Parser {
         m_lexer = lexer;
         m_symbolTable = null;
     }
-    
+
     public ASTExprNode parseExpression(String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
@@ -22,9 +23,11 @@ public class Parser {
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        return new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
+        String value = m_lexer.lookAhead().m_value;
+        m_lexer.advance();
+        return new ASTIntegerLiteralNode(value);
     }
-    
+
     ASTExprNode getArrowExpr() throws Exception {
         return getParantheseExpr();
     }
@@ -34,18 +37,18 @@ public class Parser {
     }
 
     ASTExprNode getUnaryExpr() throws Exception {
-       return getDashExpr();
+        return getDashExpr();
     }
-    
+
     ASTExprNode getMulDivExpr() throws Exception {
-       return getUnaryExpr();
+        return getUnaryExpr();
     }
-    
+
     ASTExprNode getPlusMinusExpr() throws Exception {
         return getMulDivExpr();
     }
 
-    ASTExprNode getBitAndOrExpr() throws Exception {        
+    ASTExprNode getBitAndOrExpr() throws Exception {
         return getPlusMinusExpr();
     }
 
@@ -62,7 +65,23 @@ public class Parser {
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
-        return getAndOrExpr();
+        ASTExprNode condition = getAndOrExpr();
+        Token nextToken = m_lexer.lookAhead();
+        if(nextToken.m_type == TokenIntf.Type.QUESTIONMARK){
+            m_lexer.advance();
+            ASTExprNode result1 = getQuestionMarkExpr();
+            ASTExprNode result2;
+
+            nextToken = m_lexer.lookAhead();
+            if(nextToken.m_type == TokenIntf.Type.DOUBLECOLON){
+                m_lexer.advance();
+                result2 = getQuestionMarkExpr();
+            } else {
+                throw new Exception("QuestionMarkExpression Error: expected double Colon");
+            }
+            return new ASTQuestionMarkExprNode(condition, result1, result2);
+        }
+        return new ASTQuestionMarkExprNode(condition);
     }
 
     ASTExprNode getVariableExpr() throws Exception {
@@ -77,9 +96,9 @@ public class Parser {
         return null;
     }
 
-    ASTStmtNode getPrintStmt() throws Exception{
+    ASTStmtNode getPrintStmt() throws Exception {
         return null;
-        
+
     }
 
     ASTStmtNode getStmt() throws Exception {
