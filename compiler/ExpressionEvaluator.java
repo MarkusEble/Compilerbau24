@@ -51,7 +51,6 @@ public class ExpressionEvaluator {
         }
         return result;
     }
-
     int getBitAndOrExpr() throws Exception {
         return getPlusMinusExpr();
     }
@@ -61,7 +60,23 @@ public class ExpressionEvaluator {
     }
 
     int getCompareExpr() throws Exception {
-        return getShiftExpr();
+        int result = getMulDivExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.GREATER ||
+                nextToken.m_type == TokenIntf.Type.LESS ||
+                nextToken.m_type == TokenIntf.Type.EQUAL) {
+            m_lexer.advance();
+            int rhsOperand = getShiftExpr();
+            if (nextToken.m_type == TokenIntf.Type.GREATER) {
+                return result > rhsOperand ? 1 : 0;
+            } else if (nextToken.m_type == TokenIntf.Type.LESS) {
+                return result < rhsOperand ? 1 : 0;
+            } else {
+                return result == rhsOperand ? 1 : 0;
+            }
+        }
+
+        return result;
     }
 
     int getAndOrExpr() throws Exception {
