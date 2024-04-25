@@ -1,5 +1,6 @@
 package test;
 
+import java.io.OutputStreamWriter;
 
 public interface TestSuiteIntf {
 
@@ -8,4 +9,7 @@ public interface TestSuiteIntf {
 
 	// execute a single test case with input and expected output
 	void executeTestCase(String input, String expectedOutput, TestCaseIntf testCase) throws Exception;
+
+	// trace test suite content to stream
+	void dump(compiler.InputReader testCaseSequence, OutputStreamWriter outStream) throws Exception;
 }

@@ -17,6 +17,18 @@ public class TestSuite implements TestSuiteIntf {
             executeTestCase(testCaseContent.getInput(), testCaseContent.getExpectedOutput(), testCase);
         }        
     }
+
+    // trace test suite content to stream
+    public void dump(compiler.InputReader testCaseSequence, OutputStreamWriter outStream) throws Exception {
+        // parse test content
+        java.util.Vector<test.TestCaseContent> testCaseContentArr = parseTestSuite(testCaseSequence);
+
+        // trace all test cases
+        for (test.TestCaseContent testCaseContent : testCaseContentArr) {
+            testCaseContent.toStream(outStream);
+        }
+        outStream.flush();
+    }
     
     @Override
     public void executeTestCase(String input, String expectedOutput, TestCaseIntf testCase) throws Exception {
