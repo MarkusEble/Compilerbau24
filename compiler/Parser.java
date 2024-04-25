@@ -43,7 +43,15 @@ public class Parser {
     }
 
     ASTExprNode getDashExpr() throws Exception {
-        return getArrowExpr();
+        ASTExprNode lhsOperand = getArrowExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.DASH) {
+            m_lexer.advance();
+            ASTExprNode rhsOperand = getArrowExpr();
+            lhsOperand = new ASTDashNode(lhsOperand, rhsOperand);
+            nextToken = m_lexer.lookAhead();
+        }
+        return lhsOperand;
     }
 
     ASTExprNode getUnaryExpr() throws Exception {
@@ -58,8 +66,21 @@ public class Parser {
         return getMulDivExpr();
     }
 
-    ASTExprNode getBitAndOrExpr() throws Exception {        
-        return getPlusMinusExpr();
+    ASTExprNode getBitAndOrExpr() throws Exception {
+        // NUMBER ((BITAND | BITOR) NUMBER)*
+        // plusMinusExpr ((BITAND | BITOR) plusMinusExpr)*
+        ASTExprNode lhs = getPlusMinusExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.BITAND || nextToken.m_type == TokenIntf.Type.BITOR) {
+            // consume BITAND|BITOR
+            TokenIntf.Type operator = nextToken.m_type;
+            m_lexer.advance();
+            ASTExprNode rhs = getPlusMinusExpr();
+
+            lhs = new ASTBitAndOr(lhs, operator, rhs);
+            nextToken = m_lexer.lookAhead();
+        }
+        return lhs;
     }
 
     ASTExprNode getShiftExpr() throws Exception {
@@ -67,7 +88,18 @@ public class Parser {
     }
 
     ASTExprNode getCompareExpr() throws Exception {
-        return getShiftExpr();
+        ASTExprNode result = getMulDivExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.GREATER ||
+                nextToken.m_type == TokenIntf.Type.LESS ||
+                nextToken.m_type == TokenIntf.Type.EQUAL) {
+            m_lexer.advance();
+            ASTExprNode rhsOperand = getShiftExpr();
+            result = new ASTExprCompNode(result, nextToken, rhsOperand);
+            nextToken = m_lexer.lookAhead();
+        }
+
+        return result;
     }
 
     ASTExprNode getAndOrExpr() throws Exception {
