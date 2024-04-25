@@ -33,6 +33,7 @@ public class Parser {
         while(nextToken.m_type == Type.ARROW) {
             m_lexer.advance();
             result = new ASTArrowNode(result,getParantheseExpr());
+            nextToken = m_lexer.lookAhead();
         }
         return result;
     }
