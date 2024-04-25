@@ -26,9 +26,16 @@ public class Parser {
         m_lexer.advance();
         return result;
     }
-    
+
     ASTExprNode getArrowExpr() throws Exception {
-        return getParantheseExpr();
+        ASTExprNode result = getParantheseExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while(nextToken.m_type == Type.ARROW) {
+            m_lexer.advance();
+            result = new ASTArrowNode(result,getParantheseExpr());
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
 
     ASTExprNode getDashExpr() throws Exception {
