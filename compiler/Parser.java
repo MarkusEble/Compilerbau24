@@ -22,19 +22,52 @@ public class Parser {
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        return new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
+        // parentheseExpr : NUMBER | LParen sumExpr RParen
+
+        Token token = m_lexer.lookAhead();
+        // parentheseExpr : NUMBER
+        if (m_lexer.accept(TokenIntf.Type.INTEGER)) { // consume NUMBER
+            return new ASTIntegerLiteralNode(token.m_value);
+        }
+        else {
+            // parentheseExpr : LParen sumExpr RParen
+            m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
+            ASTExprNode result = new ASTParantheseNode(getQuestionMarkExpr()); //sumExpr
+            m_lexer.expect(TokenIntf.Type.RPAREN); //consume Rparen
+            return result;
+        }
     }
-    
+
     ASTExprNode getArrowExpr() throws Exception {
-        return getParantheseExpr();
+        ASTExprNode result = getParantheseExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while(nextToken.m_type == Type.ARROW) {
+            m_lexer.advance();
+            result = new ASTArrowNode(result,getParantheseExpr());
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
     }
 
     ASTExprNode getDashExpr() throws Exception {
-        return getArrowExpr();
+        ASTExprNode lhsOperand = getArrowExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.DASH) {
+            m_lexer.advance();
+            ASTExprNode rhsOperand = getArrowExpr();
+            lhsOperand = new ASTDashNode(lhsOperand, rhsOperand);
+            nextToken = m_lexer.lookAhead();
+        }
+        return lhsOperand;
     }
 
     ASTExprNode getUnaryExpr() throws Exception {
-       return getDashExpr();
+        Token nextToken = m_lexer.lookAhead();
+        if (nextToken.m_type == Type.MINUS || nextToken.m_type == Type.NOT) {
+            m_lexer.advance();
+            return new ASTUnaryExprNode(getDashExpr(), nextToken.m_type);
+        }
+        return getDashExpr();
     }
     
     ASTExprNode getMulDivExpr() throws Exception {
@@ -45,8 +78,21 @@ public class Parser {
         return getMulDivExpr();
     }
 
-    ASTExprNode getBitAndOrExpr() throws Exception {        
-        return getPlusMinusExpr();
+    ASTExprNode getBitAndOrExpr() throws Exception {
+        // NUMBER ((BITAND | BITOR) NUMBER)*
+        // plusMinusExpr ((BITAND | BITOR) plusMinusExpr)*
+        ASTExprNode lhs = getPlusMinusExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.BITAND || nextToken.m_type == TokenIntf.Type.BITOR) {
+            // consume BITAND|BITOR
+            TokenIntf.Type operator = nextToken.m_type;
+            m_lexer.advance();
+            ASTExprNode rhs = getPlusMinusExpr();
+
+            lhs = new ASTBitAndOr(lhs, operator, rhs);
+            nextToken = m_lexer.lookAhead();
+        }
+        return lhs;
     }
 
     ASTExprNode getShiftExpr() throws Exception {
@@ -67,7 +113,18 @@ public class Parser {
     }
 
     ASTExprNode getCompareExpr() throws Exception {
-        return getShiftExpr();
+        ASTExprNode result = getMulDivExpr(); // lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.GREATER ||
+                nextToken.m_type == TokenIntf.Type.LESS ||
+                nextToken.m_type == TokenIntf.Type.EQUAL) {
+            m_lexer.advance();
+            ASTExprNode rhsOperand = getShiftExpr();
+            result = new ASTExprCompNode(result, nextToken, rhsOperand);
+            nextToken = m_lexer.lookAhead();
+        }
+
+        return result;
     }
 
     ASTExprNode getAndOrExpr() throws Exception {
