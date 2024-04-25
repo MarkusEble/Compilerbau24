@@ -1,4 +1,5 @@
 package compiler;
+
 import compiler.TokenIntf.Type;
 import compiler.ast.*;
 
@@ -10,7 +11,7 @@ public class Parser {
         m_lexer = lexer;
         m_symbolTable = null;
     }
-    
+
     public ASTExprNode parseExpression(String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
@@ -30,9 +31,9 @@ public class Parser {
     ASTExprNode getArrowExpr() throws Exception {
         ASTExprNode result = getParantheseExpr();
         Token nextToken = m_lexer.lookAhead();
-        while(nextToken.m_type == Type.ARROW) {
+        while (nextToken.m_type == Type.ARROW) {
             m_lexer.advance();
-            result = new ASTArrowNode(result,getParantheseExpr());
+            result = new ASTArrowNode(result, getParantheseExpr());
             nextToken = m_lexer.lookAhead();
         }
         return result;
@@ -58,11 +59,11 @@ public class Parser {
         }
         return getDashExpr();
     }
-    
+
     ASTExprNode getMulDivExpr() throws Exception {
-       return getUnaryExpr();
+        return getUnaryExpr();
     }
-    
+
     ASTExprNode getPlusMinusExpr() throws Exception {
         return getMulDivExpr();
     }
@@ -104,7 +105,25 @@ public class Parser {
     }
 
     ASTExprNode getAndOrExpr() throws Exception {
-        return getCompareExpr();
+        ASTExprNode start = getPlusMinusExpr(); // lhsOperand
+        ASTAndOrExpr left = null;
+        Token nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type == TokenIntf.Type.BITAND ||
+                nextToken.m_type == TokenIntf.Type.BITOR) {
+            // consume BITAND|BITOR
+            m_lexer.advance();
+            ASTExprNode rhsOperand = getPlusMinusExpr();
+            boolean isOr = nextToken.m_type != TokenIntf.Type.BITAND;
+            if (left == null) {
+                left = new ASTAndOrExpr(isOr, start);
+            } else {
+                left = new ASTAndOrExpr(isOr, left);
+                left.setRightNode(rhsOperand);
+            }
+            nextToken = m_lexer.lookAhead();
+        }
+        return left;
+
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
@@ -123,9 +142,9 @@ public class Parser {
         return null;
     }
 
-    ASTStmtNode getPrintStmt() throws Exception{
+    ASTStmtNode getPrintStmt() throws Exception {
         return null;
-        
+
     }
 
     ASTStmtNode getStmt() throws Exception {
