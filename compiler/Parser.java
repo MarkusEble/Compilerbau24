@@ -24,9 +24,15 @@ public class Parser {
     ASTExprNode getParantheseExpr() throws Exception {
         return new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
     }
-    
+
     ASTExprNode getArrowExpr() throws Exception {
-        return getParantheseExpr();
+        ASTExprNode result = getParantheseExpr();
+        Token nextToken = m_lexer.lookAhead();
+        while(nextToken.m_type == Type.ARROW) {
+            m_lexer.advance();
+            result = new ASTArrowNode(result,getParantheseExpr());
+        }
+        return result;
     }
 
     ASTExprNode getDashExpr() throws Exception {
