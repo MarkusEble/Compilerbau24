@@ -17,7 +17,7 @@ public class ASTUnaryExprNode extends ASTExprNode {
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
-        outStream.write(String.format("UnaryExpr (%s)", m_type));
+        outStream.write(String.format("UnaryExpr (%s)\n", m_type));
         m_child.print(outStream, indent + "  ");
         outStream.write("\n");
     }
