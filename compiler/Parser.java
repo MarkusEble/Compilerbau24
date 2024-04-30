@@ -197,7 +197,7 @@ public class Parser {
         // LBRACE (stmt SEMICOLON)* RBRACE
         List<ASTStmtNode> stmts = new LinkedList<>();
 
-        if(m_lexer.lookAhead().m_type == Type.BLOCK){
+        if(m_lexer.lookAhead().m_type == Type.LBRACE){
             m_lexer.advance();
             TokenIntf nextToken = m_lexer.lookAhead();
             m_lexer.expect(Type.LBRACE);
