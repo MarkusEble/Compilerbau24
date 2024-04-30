@@ -3,6 +3,9 @@ package compiler;
 import compiler.TokenIntf.Type;
 import compiler.ast.*;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Parser {
     private Lexer m_lexer;
     private SymbolTableIntf m_symbolTable;
@@ -163,12 +166,11 @@ public class Parser {
         return getAndOrExpr();
     }
 
-    ASTExprNode getVariableExpr() throws Exception {
-        Symbol value = m_symbolTable.getSymbol( m_lexer.lookAhead().m_value);
-        ASTExprNode result = new ASTVariableNode(value);
-        return result;
-
-    }
+//    ASTExprNode getVariableExpr() throws Exception {
+//        Symbol value = m_symbolTable.getSymbol( m_lexer.lookAhead().m_value);
+//        ASTExprNode result = new ASTVariableNode(value);
+//        return result;
+//    }
 
     ASTStmtNode getAssignStmt() throws Exception {
         return null;
@@ -192,7 +194,24 @@ public class Parser {
     }
 
     ASTStmtNode getBlockStmt() throws Exception {
-        return null;
+        // LBRACE (stmt SEMICOLON)* RBRACE
+        List<ASTStmtNode> stmts = new LinkedList<>();
+
+        if(m_lexer.lookAhead().m_type == Type.BLOCK){
+            m_lexer.advance();
+            TokenIntf nextToken = m_lexer.lookAhead();
+            m_lexer.expect(Type.LBRACE);
+
+            while(nextToken.m_type != Type.RBRACE && nextToken.m_type != Type.EOF){
+                m_lexer.advance();
+                ASTStmtNode stmt = getStmt();
+                m_lexer.expect(Type.SEMICOLON);
+                stmts.add(stmt);
+                nextToken = m_lexer.lookAhead();
+            }
+            m_lexer.expect(Type.RBRACE);
+        }
+        return new ASTBlockStmtNode(stmts);
     }
 
 }
