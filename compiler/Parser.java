@@ -29,8 +29,7 @@ public class Parser {
         // parentheseExpr : NUMBER
         if (m_lexer.accept(TokenIntf.Type.INTEGER)) { // consume NUMBER
             return new ASTIntegerLiteralNode(token.m_value);
-        }
-        else {
+        } else {
             // parentheseExpr : LParen sumExpr RParen
             m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
             ASTExprNode result = new ASTParantheseNode(getQuestionMarkExpr()); //sumExpr
@@ -74,7 +73,7 @@ public class Parser {
     ASTExprNode getMulDivExpr() throws Exception {
         ASTExprNode result = getUnaryExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type == TokenIntf.Type.MUL || nextToken.m_type == TokenIntf.Type.DIV ){
+        while (nextToken.m_type == TokenIntf.Type.MUL || nextToken.m_type == TokenIntf.Type.DIV) {
             m_lexer.advance(); // consume DIV | MUL
             ASTExprNode rhsOperand = getUnaryExpr();
             result = new ASTMulDivExprNode(result, nextToken, rhsOperand);
@@ -87,7 +86,7 @@ public class Parser {
         // plusMinusExpr: mulDivExpr ((PLUS|MINUS) mulDivExpr)*
         ASTExprNode result = getMulDivExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type == TokenIntf.Type.PLUS || nextToken.m_type == TokenIntf.Type.MINUS ){
+        while (nextToken.m_type == TokenIntf.Type.PLUS || nextToken.m_type == TokenIntf.Type.MINUS) {
             m_lexer.advance(); // consume PLUS | MINUS
             ASTExprNode rhsOperand = getMulDivExpr();
             result = new ASTPlusMinusExprNode(nextToken, result, rhsOperand);
@@ -164,10 +163,10 @@ public class Parser {
     }
 
     ASTExprNode getVariableExpr() throws Exception {
-        Symbol value = m_symbolTable.getSymbol( m_lexer.lookAhead().m_value);
-        ASTExprNode result = new ASTVariableNode(value);
-        return result;
-
+        return null;
+//        Symbol value = m_symbolTable.getSymbol(m_lexer.lookAhead().m_value);
+//        ASTExprNode result = new ASTVariableNode(value);
+//        return result;
     }
 
     ASTStmtNode getAssignStmt() throws Exception {
@@ -175,6 +174,22 @@ public class Parser {
     }
 
     ASTStmtNode getVarDeclareStmt() throws Exception {
+        // DECLARE identifier
+        if (m_lexer.lookAhead().m_type == Type.DECLARE) {
+            m_lexer.advance();
+            TokenIntf symbol = m_lexer.lookAhead();
+            if (symbol.m_type != Type.IDENT) {
+                throw new Exception("Identifier expected");
+            } else {
+                if (m_symbolTable.getSymbol(symbol.m_value) != null) {
+                    throw new Exception("Illegal redefinition of identifier " + symbol.m_value);
+                } else {
+                    ASTVariableDeclareNode node = new ASTVariableDeclareNode(symbol.m_value, m_symbolTable);
+                    node.execute();
+                    return node;
+                }
+            }
+        }
         return null;
     }
 
