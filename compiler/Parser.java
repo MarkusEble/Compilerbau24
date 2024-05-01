@@ -163,10 +163,9 @@ public class Parser {
     }
 
     ASTExprNode getVariableExpr() throws Exception {
-        return null;
-//        Symbol value = m_symbolTable.getSymbol(m_lexer.lookAhead().m_value);
-//        ASTExprNode result = new ASTVariableNode(value);
-//        return result;
+        Symbol value = m_symbolTable.getSymbol(m_lexer.lookAhead().m_value);
+        ASTExprNode result = new ASTVariableExprNode(value);
+        return result;
     }
 
     ASTStmtNode getAssignStmt() throws Exception {
