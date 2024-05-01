@@ -175,22 +175,14 @@ public class Parser {
 
     ASTStmtNode getVarDeclareStmt() throws Exception {
         // DECLARE identifier
-        if (m_lexer.lookAhead().m_type == Type.DECLARE) {
-            m_lexer.advance();
-            TokenIntf symbol = m_lexer.lookAhead();
-            if (symbol.m_type != Type.IDENT) {
-                throw new Exception("Identifier expected");
-            } else {
-                if (m_symbolTable.getSymbol(symbol.m_value) != null) {
-                    throw new Exception("Illegal redefinition of identifier " + symbol.m_value);
-                } else {
-                    ASTVariableDeclareNode node = new ASTVariableDeclareNode(symbol.m_value, m_symbolTable);
-                    node.execute();
-                    return node;
-                }
-            }
+        m_lexer.expect(Type.DECLARE);
+        TokenIntf symbol = m_lexer.lookAhead();
+        m_lexer.expect(Type.IDENT);
+        if (m_symbolTable.getSymbol(symbol.m_value) != null) {
+            throw new CompilerException("Illegal redefinition of identifier " + symbol.m_value, m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(), "new identifier");
+        } else {
+            return new ASTVariableDeclareNode(m_symbolTable.createSymbol(symbol.m_value));
         }
-        return null;
     }
 
     ASTStmtNode getPrintStmt() throws Exception {
