@@ -169,6 +169,19 @@ public class Parser {
     }
 
     ASTStmtNode getAssignStmt() throws Exception {
+        // assignStmt: IDENTIFIER ASSIGN expr SEMICOLON
+        Token nextToken = m_lexer.lookAhead();
+        if(nextToken.m_type == Type.IDENT) {
+            if(m_symbolTable.getSymbol(nextToken.m_value) != null) {
+                m_lexer.advance();
+                m_lexer.expect(Type.ASSIGN);
+                ASTExprNode expr = getQuestionMarkExpr();
+                m_lexer.expect(Type.SEMICOLON);
+                return new ASTAssignStmtNode(nextToken, expr, m_symbolTable);
+            } else {
+                throw new CompilerException("Identifier has not been declared " + nextToken.m_value, m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(), "Identifier should have been declared before use");
+            }
+        }
         return null;
     }
 
