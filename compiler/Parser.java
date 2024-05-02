@@ -30,9 +30,10 @@ public class Parser {
 
         Token token = m_lexer.lookAhead();
         // parentheseExpr : NUMBER
-        if (m_lexer.accept(TokenIntf.Type.INTEGER)) { // consume NUMBER
+        if (token.m_type == Type.INTEGER) { // consume NUMBER
+            m_lexer.advance();
             return new ASTIntegerLiteralNode(token.m_value);
-        } else if (m_lexer.accept(Type.IDENT)) {
+        } else if (token.m_type == Type.IDENT) {
             // parentheseExpr : varExpr
             return getVariableExpr();
         } else {
