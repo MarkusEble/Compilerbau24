@@ -28,7 +28,7 @@ public class ASTIntegerLiteralNode extends ASTExprNode {
        // create instruction object
        // pass instruction objects of childs
        // as input arguments
-       compiler.InstrIntf instr = new compiler.instr.IntLiteralInstr(m_value);
+       compiler.InstrIntf instr = new compiler.instr.InstrIntegerLiteral(m_value);
 
        // add instruction to current code block
        env.addInstr(instr);

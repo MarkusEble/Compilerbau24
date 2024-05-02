@@ -29,7 +29,7 @@ public class ASTPrintStmtNode extends ASTStmtNode {
     @Override
     public void codegen(compiler.CompileEnvIntf env) {
         compiler.InstrIntf exprInstr = expressionNode.codegen(env);
-        compiler.InstrIntf printInstr = new compiler.instr.PrintInstr(exprInstr);
+        compiler.InstrIntf printInstr = new compiler.instr.InstrPrint(exprInstr);
         env.addInstr(printInstr);
     }
 

@@ -4,20 +4,21 @@ import java.io.OutputStreamWriter;
 
 import compiler.ExecutionEnvIntf;
 
-public class IntLiteralInstr extends compiler.InstrIntf {
-    public IntLiteralInstr(String value) {
-        m_value = Integer.parseInt(value);
+public class InstrPrint extends compiler.InstrIntf {
+    private compiler.InstrIntf m_expr;
+
+    public InstrPrint(compiler.InstrIntf expr) {
+        m_expr = expr;
     }
 
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
+        env.getOutputStream().write(Integer.toString(m_expr.getValue()));
     }
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write("LITERAL ");
-        os.write(Integer.toString(m_value));
-        os.write("\n");
+        os.write("PRINT\n");
     }
 
 }
