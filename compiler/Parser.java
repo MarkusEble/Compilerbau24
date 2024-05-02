@@ -172,8 +172,14 @@ public class Parser {
 
     ASTExprNode getVariableExpr() throws Exception {
         // variable: IDENT
-        Symbol value = m_symbolTable.getSymbol(m_lexer.lookAhead().m_value);
+        Token nextToken = m_lexer.lookAhead();
+        Symbol value = m_symbolTable.getSymbol(nextToken.m_value);
         m_lexer.advance();
+        if (value == null) {
+            throw new CompilerException("Identifier has not been declared " + nextToken.m_value,
+                    m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(),
+                    "Identifier should have been declared before use");
+        }
         ASTExprNode result = new ASTVariableExprNode(value);
         return result;
     }
@@ -183,7 +189,6 @@ public class Parser {
         Token nextToken = m_lexer.lookAhead();
         m_lexer.expect(Type.IDENT);
         if (m_symbolTable.getSymbol(nextToken.m_value) != null) {
-            m_lexer.advance();
             m_lexer.expect(Type.ASSIGN);
             ASTExprNode expr = getQuestionMarkExpr();
             m_lexer.expect(Type.SEMICOLON);
@@ -227,6 +232,7 @@ public class Parser {
         } else if (nextToken.m_type == TokenIntf.Type.DECLARE) {
             return getVarDeclareStmt();
         } else if (nextToken.m_type == TokenIntf.Type.IDENT) {
+            return getAssignStmt();
         }
         return null;
     }
