@@ -20,7 +20,7 @@ public class ASTPlusMinusExprNode extends ASTExprNode {
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
-        outStream.write("MulDivExpr \n");
+        outStream.write("PlusMinusExpr \n");
         m_lhs.print(outStream, indent + "  ");
         outStream.write(indent + "  ");
         outStream.write(m_operator.m_type.name()+ "\n");

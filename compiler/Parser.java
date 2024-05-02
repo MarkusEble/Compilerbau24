@@ -202,11 +202,19 @@ public class Parser {
     }
 
     ASTStmtNode getPrintStmt() throws Exception {
-        return null;
-
+        // printStmt: PRINT expr SEMICOLON
+        m_lexer.expect(TokenIntf.Type.PRINT);
+        ASTExprNode expression = getQuestionMarkExpr();
+        m_lexer.expect(TokenIntf.Type.SEMICOLON);
+        return new ASTPrintStmtNode(expression);
     }
 
-    ASTStmtNode getStmt() throws Exception {
+    public ASTStmtNode getStmt() throws Exception {
+        Token nextToken = m_lexer.lookAhead();
+        // printStmt: PRINT epxr SEMICOL
+        if (nextToken.m_type == TokenIntf.Type.PRINT) {
+            return getPrintStmt();
+        }
         return null;
     }
 
