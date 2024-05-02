@@ -23,12 +23,15 @@ public class Parser {
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        // parentheseExpr : NUMBER | LParen sumExpr RParen
+        // parentheseExpr : NUMBER | varExpr | LParen sumExpr RParen
 
         Token token = m_lexer.lookAhead();
         // parentheseExpr : NUMBER
         if (m_lexer.accept(TokenIntf.Type.INTEGER)) { // consume NUMBER
             return new ASTIntegerLiteralNode(token.m_value);
+        } else if (m_lexer.accept(Type.IDENT)) {
+            // parentheseExpr : varExpr
+            return getVariableExpr();
         } else {
             // parentheseExpr : LParen sumExpr RParen
             m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
