@@ -22,7 +22,7 @@ public class Parser {
 
     public ASTStmtNode parseStmt(String val) throws Exception {
         m_lexer.init(val);
-        return getStmtList();
+        return getBlockStmt();
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
@@ -209,7 +209,7 @@ public class Parser {
         return new ASTPrintStmtNode(expression);
     }
 
-    public ASTStmtNode getStmt() throws Exception {
+    ASTStmtNode getStmt() throws Exception {
         Token nextToken = m_lexer.lookAhead();
         // printStmt: PRINT epxr SEMICOL
         if (nextToken.m_type == TokenIntf.Type.PRINT) {
@@ -218,28 +218,27 @@ public class Parser {
         return null;
     }
 
-    ASTStmtNode getStmtList() throws Exception {
-        return null;
+    List<ASTStmtNode> getStmtList() throws Exception {
+        // stmtList: stmt stmtList
+        // stmtList: epsilon
+        List<ASTStmtNode> stmts = new LinkedList<>();
+        TokenIntf nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type != Type.RBRACE && nextToken.m_type != Type.EOF) {
+            ASTStmtNode stmt = getStmt();
+            stmts.add(stmt);
+            nextToken = m_lexer.lookAhead();
+        }
+        return stmts;
     }
 
     ASTStmtNode getBlockStmt() throws Exception {
-        // LBRACE (stmt SEMICOLON)* RBRACE
-        List<ASTStmtNode> stmts = new LinkedList<>();
+        // LBRACE stmtList RBRACE
 
-        if(m_lexer.lookAhead().m_type == Type.LBRACE){
-            m_lexer.advance();
-            TokenIntf nextToken = m_lexer.lookAhead();
-            m_lexer.expect(Type.LBRACE);
+        m_lexer.expect(Type.LBRACE);
+        List<ASTStmtNode> stmts = getStmtList();
 
-            while(nextToken.m_type != Type.RBRACE && nextToken.m_type != Type.EOF){
-                m_lexer.advance();
-                ASTStmtNode stmt = getStmt();
-                m_lexer.expect(Type.SEMICOLON);
-                stmts.add(stmt);
-                nextToken = m_lexer.lookAhead();
-            }
-            m_lexer.expect(Type.RBRACE);
-        }
+        m_lexer.expect(Type.RBRACE);
+
         return new ASTBlockStmtNode(stmts);
     }
 
