@@ -32,6 +32,6 @@ public class ASTAssignStmtNode extends ASTStmtNode {
 
     @Override
     public void execute() {
-        // m_symbolTable.getSymbol(identifier.m_value).set(expr.eval());
+         m_symbolTable.getSymbol(m_identifier.m_value).m_number = m_expr.eval();
     }
 }
