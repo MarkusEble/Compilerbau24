@@ -12,7 +12,7 @@ public class Parser {
 
     public Parser(Lexer lexer) {
         m_lexer = lexer;
-        m_symbolTable = null;
+        m_symbolTable = new SymbolTable();
     }
 
     public ASTExprNode parseExpression(String val) throws Exception {
@@ -170,7 +170,9 @@ public class Parser {
 
 
     ASTExprNode getVariableExpr() throws Exception {
+        // variable: IDENT
         Symbol value = m_symbolTable.getSymbol(m_lexer.lookAhead().m_value);
+        m_lexer.advance();
         ASTExprNode result = new ASTVariableExprNode(value);
         return result;
     }
@@ -193,14 +195,16 @@ public class Parser {
     }
 
     ASTStmtNode getVarDeclareStmt() throws Exception {
-        // DECLARE identifier
+        // declareStmt: DECLARE identifier SEMICOL
         m_lexer.expect(Type.DECLARE);
-        TokenIntf symbol = m_lexer.lookAhead();
+        TokenIntf ident = m_lexer.lookAhead();
         m_lexer.expect(Type.IDENT);
-        if (m_symbolTable.getSymbol(symbol.m_value) != null) {
-            throw new CompilerException("Illegal redefinition of identifier " + symbol.m_value, m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(), "new identifier");
+        if (m_symbolTable.getSymbol(ident.m_value) != null) {
+            throw new CompilerException("Illegal redefinition of identifier " + ident.m_value, m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(), "new identifier");
         } else {
-            return new ASTVariableDeclareNode(m_symbolTable.createSymbol(symbol.m_value));
+            m_lexer.expect(Type.SEMICOLON);
+            Symbol varSymbol = m_symbolTable.createSymbol(ident.m_value);
+            return new ASTVariableDeclareNode(varSymbol);
         }
     }
 
@@ -214,9 +218,12 @@ public class Parser {
 
     ASTStmtNode getStmt() throws Exception {
         Token nextToken = m_lexer.lookAhead();
-        // printStmt: PRINT epxr SEMICOL
+        // stmt: printStmt
+        // stmt: declareStmt
         if (nextToken.m_type == TokenIntf.Type.PRINT) {
             return getPrintStmt();
+        } else if (nextToken.m_type == TokenIntf.Type.DECLARE) {
+            return getVarDeclareStmt();
         }
         return null;
     }
