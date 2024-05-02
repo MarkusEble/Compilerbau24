@@ -10,9 +10,9 @@ public class Parser {
     private Lexer m_lexer;
     private SymbolTableIntf m_symbolTable;
 
-    public Parser(Lexer lexer) {
+    public Parser(Lexer lexer, SymbolTableIntf symbolTable, FunctionTableIntf fucntionTable) {
         m_lexer = lexer;
-        m_symbolTable = new SymbolTable();
+        m_symbolTable = symbolTable;
     }
 
     public ASTExprNode parseExpression(String val) throws Exception {

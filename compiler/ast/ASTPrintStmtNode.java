@@ -26,4 +26,11 @@ public class ASTPrintStmtNode extends ASTStmtNode {
         outStream.write("SEMICOLON \n");
     }
 
+    @Override
+    public void codegen(compiler.CompileEnvIntf env) {
+        compiler.InstrIntf exprInstr = expressionNode.codegen(env);
+        compiler.InstrIntf printInstr = new compiler.instr.PrintInstr(exprInstr);
+        env.addInstr(printInstr);
+    }
+
 }

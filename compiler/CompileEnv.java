@@ -55,7 +55,7 @@ public class CompileEnv implements CompileEnvIntf {
         m_entry = new InstrBlock("entry");
         m_blockList.add(m_entry);
         m_currentBlock = m_entry;
-        m_root = m_parser.getStmtList();
+        m_root = m_parser.getBlockStmt();
         m_root.codegen(this);
     }
 

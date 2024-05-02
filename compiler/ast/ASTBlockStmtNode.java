@@ -26,4 +26,11 @@ public class ASTBlockStmtNode extends ASTStmtNode{
             stmt.execute();
         }
     }
+
+    @Override
+    public void codegen(compiler.CompileEnvIntf env) {
+        for (ASTStmtNode stmt : stmts) {
+            stmt.codegen(env);
+        }
+    }
 }

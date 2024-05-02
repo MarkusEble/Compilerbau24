@@ -1,7 +1,5 @@
 package compiler.ast;
 
-import compiler.info.ConstInfo;
-
 import java.io.OutputStreamWriter;
 
 public class ASTIntegerLiteralNode extends ASTExprNode {
@@ -30,15 +28,11 @@ public class ASTIntegerLiteralNode extends ASTExprNode {
        // create instruction object
        // pass instruction objects of childs
        // as input arguments
-       compiler.InstrIntf instr = new compiler.instr.InstrIntegerLiteral(Integer.valueOf(m_value));
+       compiler.InstrIntf instr = new compiler.instr.IntLiteralInstr(m_value);
 
        // add instruction to current code block
        env.addInstr(instr);
        return instr;
    }
 
-   @Override
-   public ConstInfo constFold() {
-       return new ConstInfo(true, Integer.parseInt(this.m_value));
-   }
 }
