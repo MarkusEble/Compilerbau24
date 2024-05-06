@@ -33,4 +33,13 @@ public class ASTBitAndOr extends ASTExprNode {
         // Ideally throw an error
         return 0;
     }
+
+    @Override
+    public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        compiler.InstrIntf lhsExpr = m_lhs.codegen(compileEnv);
+        compiler.InstrIntf rhsExpr = m_rhs.codegen(compileEnv);
+        compiler.InstrIntf resultExpr = new compiler.instr.InstrBitAndOr(m_operator, lhsExpr, rhsExpr);
+        compileEnv.addInstr(resultExpr);
+        return resultExpr;
+    }
 }
