@@ -34,20 +34,13 @@ public class ASTUnaryExprNode extends ASTExprNode {
     }
 
 
-/*    @Override
+    @Override
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
-        // create instruction object
-        // pass instruction objects of childs
-        // as input arguments
-        compiler.InstrIntf instr = new compiler.instr.InstrIntegerLiteral(Integer.valueOf(m_value));
+        compiler.InstrIntf child = m_child.codegen(env);
 
-        // add instruction to current code block
+        compiler.InstrIntf instr = new compiler.instr.InstrUnaryExpr( null, child);
+
         env.addInstr(instr);
         return instr;
     }
-
-    @Override
-    public ConstInfo constFold() {
-        return new ConstInfo(true, Integer.parseInt(this.m_value));
-    }*/
 }
