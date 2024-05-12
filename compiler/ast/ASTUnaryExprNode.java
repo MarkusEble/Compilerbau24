@@ -38,7 +38,7 @@ public class ASTUnaryExprNode extends ASTExprNode {
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
         compiler.InstrIntf child = m_child.codegen(env);
 
-        compiler.InstrIntf instr = new compiler.instr.InstrUnaryExpr( null, child);
+        compiler.InstrIntf instr = new compiler.instr.InstrUnaryExpr( m_type, child);
 
         env.addInstr(instr);
         return instr;
