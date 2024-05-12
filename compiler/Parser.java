@@ -176,9 +176,9 @@ public class Parser {
         Symbol value = m_symbolTable.getSymbol(nextToken.m_value);
         m_lexer.advance();
         if (value == null) {
-            throw new CompilerException("Identifier has not been declared " + nextToken.m_value,
-                    m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(),
-                    "Identifier should have been declared before use");
+            m_lexer.throwCompilerException(
+                "Identifier has not been declared " + nextToken.m_value,
+                "Identifier should have been declared before use");
         }
         ASTExprNode result = new ASTVariableExprNode(value);
         return result;
@@ -194,9 +194,9 @@ public class Parser {
             m_lexer.expect(Type.SEMICOLON);
             return new ASTAssignStmtNode(nextToken, expr, m_symbolTable);
         } else {
-            throw new CompilerException("Identifier has not been declared " + nextToken.m_value,
-                    m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(),
-                    "Identifier should have been declared before use");
+            m_lexer.throwCompilerException("Identifier has not been declared " + nextToken.m_value,
+                "Identifier should have been declared before use");
+            return null;
         }
     }
 
@@ -206,7 +206,8 @@ public class Parser {
         TokenIntf ident = m_lexer.lookAhead();
         m_lexer.expect(Type.IDENT);
         if (m_symbolTable.getSymbol(ident.m_value) != null) {
-            throw new CompilerException("Illegal redefinition of identifier " + ident.m_value, m_lexer.m_input.getLine(), m_lexer.m_input.currentLine(), "new identifier");
+            m_lexer.throwCompilerException("Illegal redefinition of identifier " + ident.m_value, "new identifier");
+            return null;
         } else {
             m_lexer.expect(Type.SEMICOLON);
             Symbol varSymbol = m_symbolTable.createSymbol(ident.m_value);
