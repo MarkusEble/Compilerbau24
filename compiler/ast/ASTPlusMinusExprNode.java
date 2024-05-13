@@ -20,7 +20,7 @@ public class ASTPlusMinusExprNode extends ASTExprNode {
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
-        outStream.write("MulDivExpr \n");
+        outStream.write("PlusMinusExpr \n");
         m_lhs.print(outStream, indent + "  ");
         outStream.write(indent + "  ");
         outStream.write(m_operator.m_type.name()+ "\n");
@@ -36,5 +36,14 @@ public class ASTPlusMinusExprNode extends ASTExprNode {
             result = m_lhs.eval() - m_rhs.eval();
         }
         return result;
+    }
+
+    @Override
+    public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        compiler.InstrIntf lhsExpr = m_lhs.codegen(compileEnv);
+        compiler.InstrIntf rhsExpr = m_rhs.codegen(compileEnv);
+        compiler.InstrIntf resultExpr =  new compiler.instr.InstrPlusMinus(m_operator.m_type, lhsExpr, rhsExpr);
+        compileEnv.addInstr(resultExpr);
+        return resultExpr;
     }
 }

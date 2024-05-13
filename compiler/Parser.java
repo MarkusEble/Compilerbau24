@@ -3,13 +3,16 @@ package compiler;
 import compiler.TokenIntf.Type;
 import compiler.ast.*;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Parser {
     private Lexer m_lexer;
     private SymbolTableIntf m_symbolTable;
 
-    public Parser(Lexer lexer) {
+    public Parser(Lexer lexer, SymbolTableIntf symbolTable, FunctionTableIntf fucntionTable) {
         m_lexer = lexer;
-        m_symbolTable = null;
+        m_symbolTable = symbolTable;
     }
 
     public ASTExprNode parseExpression(String val) throws Exception {
@@ -19,18 +22,21 @@ public class Parser {
 
     public ASTStmtNode parseStmt(String val) throws Exception {
         m_lexer.init(val);
-        return getStmtList();
+        return getBlockStmt();
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        // parentheseExpr : NUMBER | LParen sumExpr RParen
+        // parentheseExpr : NUMBER | varExpr | LParen sumExpr RParen
 
         Token token = m_lexer.lookAhead();
         // parentheseExpr : NUMBER
-        if (m_lexer.accept(TokenIntf.Type.INTEGER)) { // consume NUMBER
+        if (token.m_type == Type.INTEGER) { // consume NUMBER
+            m_lexer.advance();
             return new ASTIntegerLiteralNode(token.m_value);
-        }
-        else {
+        } else if (token.m_type == Type.IDENT) {
+            // parentheseExpr : varExpr
+            return getVariableExpr();
+        } else {
             // parentheseExpr : LParen sumExpr RParen
             m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
             ASTExprNode result = new ASTParantheseNode(getQuestionMarkExpr()); //sumExpr
@@ -74,7 +80,7 @@ public class Parser {
     ASTExprNode getMulDivExpr() throws Exception {
         ASTExprNode result = getUnaryExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type == TokenIntf.Type.MUL || nextToken.m_type == TokenIntf.Type.DIV ){
+        while (nextToken.m_type == TokenIntf.Type.MUL || nextToken.m_type == TokenIntf.Type.DIV) {
             m_lexer.advance(); // consume DIV | MUL
             ASTExprNode rhsOperand = getUnaryExpr();
             result = new ASTMulDivExprNode(result, nextToken, rhsOperand);
@@ -87,7 +93,7 @@ public class Parser {
         // plusMinusExpr: mulDivExpr ((PLUS|MINUS) mulDivExpr)*
         ASTExprNode result = getMulDivExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type == TokenIntf.Type.PLUS || nextToken.m_type == TokenIntf.Type.MINUS ){
+        while (nextToken.m_type == TokenIntf.Type.PLUS || nextToken.m_type == TokenIntf.Type.MINUS) {
             m_lexer.advance(); // consume PLUS | MINUS
             ASTExprNode rhsOperand = getMulDivExpr();
             result = new ASTPlusMinusExprNode(nextToken, result, rhsOperand);
@@ -163,36 +169,97 @@ public class Parser {
         return getAndOrExpr();
     }
 
-    ASTExprNode getVariableExpr() throws Exception {
-        Symbol value = m_symbolTable.getSymbol( m_lexer.lookAhead().m_value);
-        ASTExprNode result = new ASTVariableNode(value);
-        return result;
 
+    ASTExprNode getVariableExpr() throws Exception {
+        // variable: IDENT
+        Token nextToken = m_lexer.lookAhead();
+        Symbol value = m_symbolTable.getSymbol(nextToken.m_value);
+        m_lexer.advance();
+        if (value == null) {
+            m_lexer.throwCompilerException(
+                "Identifier has not been declared " + nextToken.m_value,
+                "Identifier should have been declared before use");
+        }
+        ASTExprNode result = new ASTVariableExprNode(value);
+        return result;
     }
 
     ASTStmtNode getAssignStmt() throws Exception {
-        return null;
+        // assignStmt: IDENTIFIER ASSIGN expr SEMICOLON
+        Token nextToken = m_lexer.lookAhead();
+        m_lexer.expect(Type.IDENT);
+        if (m_symbolTable.getSymbol(nextToken.m_value) != null) {
+            m_lexer.expect(Type.ASSIGN);
+            ASTExprNode expr = getQuestionMarkExpr();
+            m_lexer.expect(Type.SEMICOLON);
+            return new ASTAssignStmtNode(nextToken, expr, m_symbolTable);
+        } else {
+            m_lexer.throwCompilerException("Identifier has not been declared " + nextToken.m_value,
+                "Identifier should have been declared before use");
+            return null;
+        }
     }
 
     ASTStmtNode getVarDeclareStmt() throws Exception {
-        return null;
+        // declareStmt: DECLARE identifier SEMICOL
+        m_lexer.expect(Type.DECLARE);
+        TokenIntf ident = m_lexer.lookAhead();
+        m_lexer.expect(Type.IDENT);
+        if (m_symbolTable.getSymbol(ident.m_value) != null) {
+            m_lexer.throwCompilerException("Illegal redefinition of identifier " + ident.m_value, "new identifier");
+            return null;
+        } else {
+            m_lexer.expect(Type.SEMICOLON);
+            Symbol varSymbol = m_symbolTable.createSymbol(ident.m_value);
+            return new ASTVariableDeclareNode(varSymbol);
+        }
     }
 
     ASTStmtNode getPrintStmt() throws Exception {
-        return null;
-
+        // printStmt: PRINT expr SEMICOLON
+        m_lexer.expect(TokenIntf.Type.PRINT);
+        ASTExprNode expression = getQuestionMarkExpr();
+        m_lexer.expect(TokenIntf.Type.SEMICOLON);
+        return new ASTPrintStmtNode(expression);
     }
 
     ASTStmtNode getStmt() throws Exception {
+        Token nextToken = m_lexer.lookAhead();
+        // stmt: printStmt
+        // stmt: declareStmt
+        // stmt: assignStmt
+        if (nextToken.m_type == TokenIntf.Type.PRINT) {
+            return getPrintStmt();
+        } else if (nextToken.m_type == TokenIntf.Type.DECLARE) {
+            return getVarDeclareStmt();
+        } else if (nextToken.m_type == TokenIntf.Type.IDENT) {
+            return getAssignStmt();
+        }
         return null;
     }
 
-    ASTStmtNode getStmtList() throws Exception {
-        return null;
+    List<ASTStmtNode> getStmtList() throws Exception {
+        // stmtList: stmt stmtList
+        // stmtList: epsilon
+        List<ASTStmtNode> stmts = new LinkedList<>();
+        TokenIntf nextToken = m_lexer.lookAhead();
+        while (nextToken.m_type != Type.RBRACE && nextToken.m_type != Type.EOF) {
+            ASTStmtNode stmt = getStmt();
+            stmts.add(stmt);
+            nextToken = m_lexer.lookAhead();
+        }
+        return stmts;
     }
 
     ASTStmtNode getBlockStmt() throws Exception {
-        return null;
+        // LBRACE stmtList RBRACE
+
+        m_lexer.expect(Type.LBRACE);
+        List<ASTStmtNode> stmts = getStmtList();
+
+        m_lexer.expect(Type.RBRACE);
+
+        return new ASTBlockStmtNode(stmts);
     }
 
 }

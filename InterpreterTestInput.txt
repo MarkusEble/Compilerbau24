@@ -1,0 +1,77 @@
+$IN
+// test QuestionMark expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test AndOr expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test Compare expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test Shift expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test BitAndOr expression
+{
+    PRINT 5&3|2;
+}
+$OUT
+3
+$IN
+// test PlusMinus expression
+{
+    PRINT 5+2-4;
+}
+$OUT
+3
+$IN
+// test MulDiv expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test Unary expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test Dash expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test Arrow expression
+{
+    PRINT 1;
+}
+$OUT
+1
+$IN
+// test Paranthese expression
+{
+    PRINT 1;
+}
+$OUT
+1
