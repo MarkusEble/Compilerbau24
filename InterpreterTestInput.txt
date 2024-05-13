@@ -64,10 +64,10 @@ $OUT
 $IN
 // test Arrow expression
 {
-    PRINT 1;
+    PRINT 3->5->4;
 }
 $OUT
-1
+4
 $IN
 // test Paranthese expression
 {
