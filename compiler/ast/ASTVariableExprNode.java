@@ -1,6 +1,9 @@
 package compiler.ast;
 
+import compiler.CompileEnvIntf;
+import compiler.InstrIntf;
 import compiler.Symbol;
+import compiler.instr.InstrVariableExpr;
 
 import java.io.OutputStreamWriter;
 
@@ -23,5 +26,10 @@ public class ASTVariableExprNode extends ASTExprNode {
     @Override
     public int eval() {
         return Integer.valueOf(m_symbol.m_number);
+    }
+
+    @Override
+    public InstrIntf codegen(CompileEnvIntf env) {
+        return new InstrVariableExpr(m_symbol.m_name);
     }
 }
