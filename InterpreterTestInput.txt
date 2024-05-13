@@ -22,10 +22,10 @@ $OUT
 $IN
 // test Shift expression
 {
-    PRINT 1;
+    PRINT 2<<3;
 }
 $OUT
-1
+16
 $IN
 // test BitAndOr expression
 {

@@ -30,4 +30,14 @@ public class ASTShiftExprNode extends ASTExprNode {
         lhsOperand.print(outStream, indent);
         rhsOperand.print(outStream, indent);
     }
+
+    @Override
+    public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
+        compiler.InstrIntf rhsExpr = rhsOperand.codegen(env);
+        compiler.InstrIntf lhsExpr = lhsOperand.codegen(env);
+        compiler.InstrIntf resultExpr =  new compiler.instr.InstrShift(shiftKeyword.m_type, lhsExpr, rhsExpr);
+        env.addInstr(resultExpr);
+        return resultExpr;
+    }
+
 }
