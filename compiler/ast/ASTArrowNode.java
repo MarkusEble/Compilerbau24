@@ -35,4 +35,12 @@ public class ASTArrowNode extends ASTExprNode {
         outStream.write("\n");
         m_rvalue.print(outStream, indent + " ");
     }
+    @Override
+    public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        compiler.InstrIntf rhsExpr = m_rvalue.codegen(compileEnv);
+        compiler.InstrIntf lhsExpr = m_lvalue.codegen(compileEnv);
+        compiler.InstrIntf resultExpr =  new compiler.instr.InstrArrow(lhsExpr, rhsExpr);
+        compileEnv.addInstr(resultExpr);
+        return resultExpr;
+    }
 }
