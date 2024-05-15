@@ -1,5 +1,7 @@
 package compiler.ast;
 
+import compiler.CompileEnvIntf;
+import compiler.InstrIntf;
 import compiler.Token;
 
 import java.io.OutputStreamWriter;
@@ -34,5 +36,14 @@ public class ASTExprCompNode extends ASTExprNode{
         outStream.write(token.m_value);
         outStream.write("\n");
         rhs.print(outStream, indent);
+    }
+
+    @Override
+    public InstrIntf codegen(CompileEnvIntf compileEnv) {
+        InstrIntf lhsInstr = lhs.codegen(compileEnv);
+        InstrIntf rhsInstr = rhs.codegen(compileEnv);
+        InstrIntf resultExpr = new compiler.instr.InstrComp(lhsInstr, rhsInstr, token);
+        compileEnv.addInstr(resultExpr);
+        return resultExpr;
     }
 }

@@ -75,3 +75,10 @@ $IN
 }
 $OUT
 1
+$IN
+// test Compare expression
+{
+PRINT 1 < 2;
+}
+$OUT
+1
