@@ -15,7 +15,7 @@ $OUT
 $IN
 // test Compare expression
 {
-    PRINT 1;
+    PRINT 1 < 2;
 }
 $OUT
 1
@@ -72,13 +72,6 @@ $IN
 // test Paranthese expression
 {
     PRINT 1;
-}
-$OUT
-1
-$IN
-// test Compare expression
-{
-PRINT 1 < 2;
 }
 $OUT
 1
