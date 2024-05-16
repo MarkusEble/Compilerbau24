@@ -1,10 +1,10 @@
 $IN
 // test QuestionMark expression
 {
-    PRINT 1;
+    PRINT 1?2:3;
 }
 $OUT
-1
+2
 $IN
 // test AndOr expression
 {
@@ -50,10 +50,10 @@ $OUT
 $IN
 // test Unary expression
 {
-    PRINT 1;
+    PRINT -1+1;
 }
 $OUT
-1
+0
 $IN
 // test Dash expression
 {

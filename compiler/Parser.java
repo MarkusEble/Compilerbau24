@@ -166,7 +166,23 @@ public class Parser {
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
-        return getAndOrExpr();
+        ASTExprNode condition = getAndOrExpr();
+        Token nextToken = m_lexer.lookAhead();
+        if(nextToken.m_type == TokenIntf.Type.QUESTIONMARK){
+            m_lexer.advance();
+            ASTExprNode result1 = getQuestionMarkExpr();
+            ASTExprNode result2;
+
+            nextToken = m_lexer.lookAhead();
+            if(nextToken.m_type == TokenIntf.Type.DOUBLECOLON){
+                m_lexer.advance();
+                result2 = getQuestionMarkExpr();
+            } else {
+                throw new Exception("QuestionMarkExpression Error: expected double Colon");
+            }
+            return new ASTQuestionMarkExprNode(condition, result1, result2);
+        }
+        return new ASTQuestionMarkExprNode(condition);
     }
 
 

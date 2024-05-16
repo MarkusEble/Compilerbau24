@@ -5,14 +5,17 @@ import compiler.TokenIntf.Type;
 public class ExpressionEvaluator {
     private Lexer m_lexer;
 
+
     public ExpressionEvaluator(Lexer lexer) {
         m_lexer = lexer;
     }
+
 
     public int eval(String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
     }
+
 
     int getParantheseExpr() throws Exception {
         // parentheseExpr : NUMBER | LParen sumExpr RParen
@@ -30,6 +33,7 @@ public class ExpressionEvaluator {
             return result;
         }
     }
+
 
     int getArrowExpr() throws Exception {
         //arrowExpr: ParantheseExpr ARROW ParantheseExpr
@@ -82,6 +86,7 @@ public class ExpressionEvaluator {
         return getDashExpr();
     }
 
+
     int getMulDivExpr() throws Exception {
         // mulDivExpr: unaryExpr ((MUL | DIV) unaryExpr )*
         int result = getUnaryExpr(); // lhsOperand
@@ -99,6 +104,7 @@ public class ExpressionEvaluator {
         }
         return result;
     }
+
 
     int getPlusMinusExpr() throws Exception {
         // plusMinusExpr : mulDivExpr ((PLUS|MINUS) mulDivExpr)*
@@ -193,7 +199,7 @@ public class ExpressionEvaluator {
     }
 
     int getQuestionMarkExpr() throws Exception {
-        // getQuestionMark = AndOrExpr ? AndOrExpr : AndOrExpr
+        // getQuestionMark = AndOrExpr ? QuestionMarkExpr : QuestionMarkExpr
         int condition = getAndOrExpr();
         Token nextToken = m_lexer.lookAhead();
         if(nextToken.m_type == TokenIntf.Type.QUESTIONMARK){
@@ -206,7 +212,7 @@ public class ExpressionEvaluator {
                 m_lexer.advance();
                 result2 = getQuestionMarkExpr();
             } else {
-                throw new Exception("QuestionMarkExpression Error: expected double Column");
+                throw new Exception("QuestionMarkExpression Error: expected double Colon");
             }
 
 

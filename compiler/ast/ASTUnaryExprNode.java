@@ -1,6 +1,5 @@
 package compiler.ast;
 
-import compiler.Token;
 import compiler.TokenIntf;
 //import compiler.info.ConstInfo;
 
@@ -34,19 +33,16 @@ public class ASTUnaryExprNode extends ASTExprNode {
     }
 
 
-/*    @Override
+    @Override
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
         // create instruction object
-        // pass instruction objects of childs
-        // as input arguments
-        compiler.InstrIntf instr = new compiler.instr.InstrIntegerLiteral(Integer.valueOf(m_value));
-
-        // add instruction to current code block
-        env.addInstr(instr);
-        return instr;
+        compiler.InstrIntf childExpr = m_child.codegen(env);
+        compiler.InstrIntf resultExpr = new compiler.instr.InstrUnary(m_type, childExpr);
+        env.addInstr(resultExpr);
+        return resultExpr;
     }
 
-    @Override
+   /* @Override
     public ConstInfo constFold() {
         return new ConstInfo(true, Integer.parseInt(this.m_value));
     }*/
