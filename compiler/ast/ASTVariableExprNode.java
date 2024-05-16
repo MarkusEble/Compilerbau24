@@ -30,6 +30,8 @@ public class ASTVariableExprNode extends ASTExprNode {
 
     @Override
     public InstrIntf codegen(CompileEnvIntf env) {
-        return new InstrVariableExpr(m_symbol.m_name);
+        compiler.InstrIntf variableExpr = new InstrVariableExpr(m_symbol.m_name);
+        env.addInstr(variableExpr);
+        return variableExpr;
     }
 }

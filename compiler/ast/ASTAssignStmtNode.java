@@ -16,6 +16,13 @@ public class ASTAssignStmtNode extends ASTStmtNode {
         this.m_symbolTable = symbolTable;
     }
 
+    public void codegen(compiler.CompileEnvIntf env) {
+       compiler.InstrIntf rhs = m_expr.codegen(env);
+       compiler.Symbol lhs = m_symbolTable.getSymbol(m_identifier.m_value);
+       compiler.InstrIntf assign = new compiler.instr.InstrAssign(lhs, rhs);
+       env.addInstr(assign);
+    }
+ 
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);

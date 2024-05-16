@@ -250,6 +250,8 @@ public class Parser {
             return getVarDeclareStmt();
         } else if (nextToken.m_type == TokenIntf.Type.IDENT) {
             return getAssignStmt();
+        } else if (nextToken.m_type == TokenIntf.Type.BLOCK) {
+            return getBlock2Stmt();
         }
         return null;
     }
@@ -278,4 +280,15 @@ public class Parser {
         return new ASTBlockStmtNode(stmts);
     }
 
+    ASTStmtNode getBlock2Stmt() throws Exception {
+        // BLOCK LBRACE stmtList RBRACE
+        m_lexer.expect(Type.BLOCK);
+        m_lexer.expect(Type.LBRACE);
+
+        List<ASTStmtNode> stmts = getStmtList();
+
+        m_lexer.expect(Type.RBRACE);
+
+        return new ASTBlock2StmtNode(stmts);
+    }
 }
