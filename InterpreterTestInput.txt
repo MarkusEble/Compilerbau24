@@ -57,10 +57,10 @@ $OUT
 $IN
 // test Dash expression
 {
-    PRINT 1;
+    PRINT 2^2;
 }
 $OUT
-1
+4
 $IN
 // test Arrow expression
 {
