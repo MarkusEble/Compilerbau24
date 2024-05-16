@@ -112,7 +112,6 @@ public class ExpressionEvaluator {
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.PLUS ||
                 nextToken.m_type == TokenIntf.Type.MINUS) {
-                nextToken.m_type == TokenIntf.Type.MINUS) {
             m_lexer.advance(); // consume PLUS|MINUS
             int rhsOperand = getMulDivExpr();
             if (nextToken.m_type == TokenIntf.Type.PLUS) {

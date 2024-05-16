@@ -1,10 +1,14 @@
 package compiler.ast;
 
+import compiler.CompileEnvIntf;
+import compiler.InstrIntf;
+import compiler.instr.InstrQuestionMarkExpr;
+
 import java.io.OutputStreamWriter;
 import java.util.Optional;
 
 public class ASTQuestionMarkExprNode extends ASTExprNode {
-    private ASTExprNode m_condition;
+    private final ASTExprNode m_condition;
     private Optional<ASTExprNode> m_result1 = Optional.empty();
     private Optional<ASTExprNode> m_result2 = Optional.empty();
 
@@ -48,4 +52,20 @@ public class ASTQuestionMarkExprNode extends ASTExprNode {
         outStream.flush();
     }
 
+    @Override
+    public InstrIntf codegen(CompileEnvIntf compileEnvIntf){
+        Optional<InstrIntf> result1;
+        Optional<InstrIntf> result2;
+        if (m_result1.isPresent() && m_result2.isPresent()){
+            result1 = Optional.of(m_result1.get().codegen(compileEnvIntf));
+            result2 = Optional.of(m_result2.get().codegen(compileEnvIntf));
+        } else {
+            result1 = Optional.empty();
+            result2 = Optional.empty();
+        }
+        InstrIntf condition = m_condition.codegen(compileEnvIntf);
+        InstrIntf questionMarkExpr = new InstrQuestionMarkExpr(result1, result2, condition);
+        compileEnvIntf.addInstr(questionMarkExpr);
+        return  questionMarkExpr;
+    }
 }

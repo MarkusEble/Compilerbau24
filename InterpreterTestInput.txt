@@ -1,10 +1,10 @@
 $IN
 // test QuestionMark expression
 {
-    PRINT 1;
+    PRINT 1?2:3;
 }
 $OUT
-1
+2
 $IN
 // test AndOr expression
 {
