@@ -8,7 +8,7 @@ $OUT
 $IN
 // test AndOr expression
 {
-    PRINT 1;
+    PRINT 1 && 1;
 }
 $OUT
 1
