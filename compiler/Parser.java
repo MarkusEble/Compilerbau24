@@ -182,7 +182,7 @@ public class Parser {
             }
             return new ASTQuestionMarkExprNode(condition, result1, result2);
         }
-        return new ASTQuestionMarkExprNode(condition);
+        return condition;
     }
 
 

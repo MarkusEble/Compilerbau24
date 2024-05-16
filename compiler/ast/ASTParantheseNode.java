@@ -15,6 +15,10 @@ public class ASTParantheseNode extends ASTExprNode {
         return m_expr.eval();
     }
 
+    public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
+        return m_expr.codegen(env);
+    }
+
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);

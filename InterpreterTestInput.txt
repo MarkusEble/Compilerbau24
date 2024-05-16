@@ -71,7 +71,7 @@ $OUT
 $IN
 // test Paranthese expression
 {
-    PRINT 1;
+    PRINT 4*(3+5);
 }
 $OUT
-1
+32
