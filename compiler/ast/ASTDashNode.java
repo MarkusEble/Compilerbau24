@@ -23,4 +23,13 @@ public class ASTDashNode extends ASTExprNode {
         return (int) Math.pow(lhs.eval(), rhs.eval());
     }
 
+    @Override
+    public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        compiler.InstrIntf lhsExpr = lhs.codegen(compileEnv);
+        compiler.InstrIntf rhsExpr = rhs.codegen(compileEnv);
+        compiler.InstrIntf resultExpr =  new compiler.instr.InstrDash(lhsExpr, rhsExpr);
+        compileEnv.addInstr(resultExpr);
+        return resultExpr;
+    }
+
 }
