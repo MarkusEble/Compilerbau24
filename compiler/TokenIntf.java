@@ -54,6 +54,10 @@ public abstract class TokenIntf {
         CALL,
         RETURN,
         BLOCK,
+		NUMERIC_IF,
+		POSITIVE,
+		NEGATIVE,
+		ZERO,
 		DEFAULT,
 	}
 

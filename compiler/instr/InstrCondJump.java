@@ -24,7 +24,7 @@ public class InstrCondJump extends compiler.InstrIntf {
         os.write("JUMPCOND ");
         os.write(m_trueBlock.getName());
         os.write(", ");
-        os.write(m_falseBlock.getName())
+        os.write(m_falseBlock.getName());
         os.write("\n");
     }
 
