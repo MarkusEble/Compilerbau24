@@ -1,6 +1,7 @@
 package compiler.instr;
 
 import compiler.ExecutionEnvIntf;
+import compiler.TokenIntf;
 
 import java.io.OutputStreamWriter;
 
@@ -20,8 +21,7 @@ public class InstrDash extends compiler.InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write("DASH");
-        os.write("\n");
+        os.write(String.format("%%%d = %s %%%d, %%%d\n", m_id, TokenIntf.Type.DASH.toString(), m_lhs.getId(), m_rhs.getId()));     
     }
 
 }

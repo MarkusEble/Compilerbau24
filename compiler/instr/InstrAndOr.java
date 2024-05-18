@@ -26,7 +26,6 @@ public class InstrAndOr extends compiler.InstrIntf  {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write(op.toString());
-        os.write("\n");
+        os.write(String.format("%%%d = %s %%%d, %%%d\n", m_id, op.toString(), lhs.getId(), lhs.getId()));     
     }
 }

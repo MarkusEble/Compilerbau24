@@ -2,6 +2,7 @@ package compiler.instr;
 
 import compiler.ExecutionEnvIntf;
 import compiler.Token;
+import compiler.TokenIntf;
 
 import java.io.OutputStreamWriter;
 
@@ -28,6 +29,6 @@ public class InstrComp extends compiler.InstrIntf{
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write(token.toString() + "\n");
+        os.write(String.format("%%%d = %s %%%d, %%%d\n", m_id, token.toString(), lhsInstr.getId(), rhsInstr.getId()));     
     }
 }

@@ -15,9 +15,7 @@ public class InstrIntegerLiteral extends compiler.InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write("LITERAL ");
-        os.write(Integer.toString(m_value));
-        os.write("\n");
+        os.write(String.format("%%%d = LITERAL %d\n", m_id, m_value));
     }
 
 }

@@ -27,7 +27,6 @@ public class InstrArrow extends compiler.InstrIntf{
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write(TokenIntf.Type.ARROW.toString());
-        os.write("\n");
+        os.write(String.format("%%%d = %s %%%d, %%%d\n", m_id, TokenIntf.Type.ARROW.toString(), m_lhs.getId(), m_rhs.getId()));     
     }
 }

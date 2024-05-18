@@ -20,9 +20,7 @@ public class InstrAssign extends compiler.InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write("ASSIGN ");
-        os.write(m_lhs.m_name);
-        os.write("\n");
+        os.write(String.format("STORE %s, %%%d\n", m_lhs.m_name, m_rhs.getId()));
     }
 
 }
