@@ -40,10 +40,31 @@ public class ASTPlusMinusExprNode extends ASTExprNode {
 
     @Override
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        Integer constResult = constFold();
+        if (constResult != null) {
+            compiler.InstrIntf resultExpr = new compiler.instr.InstrIntegerLiteral(constResult.toString());
+            compileEnv.addInstr(resultExpr);
+            return resultExpr;
+        }
         compiler.InstrIntf lhsExpr = m_lhs.codegen(compileEnv);
         compiler.InstrIntf rhsExpr = m_rhs.codegen(compileEnv);
         compiler.InstrIntf resultExpr =  new compiler.instr.InstrPlusMinus(m_operator.m_type, lhsExpr, rhsExpr);
         compileEnv.addInstr(resultExpr);
         return resultExpr;
+    }
+
+    @Override
+    public Integer constFold() {
+        Integer constLhs = m_lhs.constFold();
+        Integer constRhs = m_rhs.constFold();
+        if (constLhs != null && constRhs != null) {
+            if (m_operator.m_type == TokenIntf.Type.PLUS) {
+                return Integer.valueOf((int)constLhs + (int)constRhs);
+            } else {
+                return Integer.valueOf((int)constLhs - (int)constRhs);
+            }
+        } else {
+            return null;
+        }
     }
 }
