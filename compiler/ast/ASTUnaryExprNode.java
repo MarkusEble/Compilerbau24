@@ -28,7 +28,7 @@ public class ASTUnaryExprNode extends ASTExprNode {
     public int eval() {
         int result = m_child.eval();
         if(m_type == TokenIntf.Type.NOT){
-            return result > 0 ? 0 : 1;
+            return result == 0 ? 1 : 0;
         } else if (m_type == TokenIntf.Type.MINUS) {
             return  - result;
         }
@@ -59,7 +59,7 @@ public class ASTUnaryExprNode extends ASTExprNode {
 
         if (childValue != null) {
             if(m_type == TokenIntf.Type.NOT){
-                return childValue > 0 ? 0 : 1;
+                return childValue == 0 ? 1 : 0;
             } else if (m_type == TokenIntf.Type.MINUS) {
                 return  - childValue;
             }
