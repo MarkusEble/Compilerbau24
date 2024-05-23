@@ -25,6 +25,11 @@ public class ASTDashNode extends ASTExprNode {
 
     @Override
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        Integer constResult = this.constFold();
+        if (constResult != null) {
+            return new compiler.instr.InstrIntegerLiteral(constResult.toString());
+        }
+
         compiler.InstrIntf lhsExpr = lhs.codegen(compileEnv);
         compiler.InstrIntf rhsExpr = rhs.codegen(compileEnv);
         compiler.InstrIntf resultExpr =  new compiler.instr.InstrDash(lhsExpr, rhsExpr);
@@ -32,4 +37,13 @@ public class ASTDashNode extends ASTExprNode {
         return resultExpr;
     }
 
+    @Override
+    public Integer constFold() {
+        Integer lhsConstFold = lhs.constFold();
+        Integer rhsConstFold = rhs.constFold();
+        if (lhsConstFold != null && rhsConstFold != null) {
+            return (int) Math.pow(lhsConstFold, rhsConstFold);
+        }
+        return null;
+    }
 }
