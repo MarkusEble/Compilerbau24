@@ -1,5 +1,6 @@
 package compiler.ast;
 
+import compiler.CompileEnvIntf;
 import compiler.TokenIntf;
 
 import java.io.OutputStreamWriter;
@@ -38,5 +39,13 @@ public class ASTNumericIfNode extends ASTStmtNode {
         } else {
             zero.execute();
         }
+    }
+
+    @Override
+    public void codegen(CompileEnvIntf env) {
+        String leonie = "Hallo Leonie";
+
+
+        super.codegen(env);
     }
 }
