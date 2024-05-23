@@ -152,13 +152,11 @@ public class Parser {
     ASTExprNode getAndOrExpr() throws Exception {
         ASTExprNode left = getCompareExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type == TokenIntf.Type.BITAND ||
-                nextToken.m_type == TokenIntf.Type.BITOR) {
+        while (nextToken.m_type == TokenIntf.Type.AND || nextToken.m_type == TokenIntf.Type.OR) {
             // consume BITAND|BITOR
             m_lexer.advance();
             ASTExprNode rhsOperand = getCompareExpr();
-            boolean isOr = nextToken.m_type != TokenIntf.Type.BITAND;
-            left = new ASTAndOrExpr(isOr, left, rhsOperand);
+            left = new ASTAndOrExpr(nextToken, left, rhsOperand);
             nextToken = m_lexer.lookAhead();
         }
         return left;

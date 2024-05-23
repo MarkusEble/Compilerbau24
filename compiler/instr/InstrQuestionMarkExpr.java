@@ -28,8 +28,6 @@ public class InstrQuestionMarkExpr extends InstrIntf{
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write(TokenIntf.Type.QUESTIONMARK.toString());
-//        os.write(Integer.toString(m_value));
-        os.write("\n");
+        os.write(String.format("%%%d = %%%d %s %%%d, %%%d\n", m_id, m_condition.getId(), TokenIntf.Type.QUESTIONMARK.toString(), m_lhsInstruction.get().getId(), m_rhsInstruction.get().getId()));     
     }
 }

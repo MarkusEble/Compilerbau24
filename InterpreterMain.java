@@ -8,10 +8,10 @@ public class InterpreterMain {
         OutputStreamWriter outStream = new OutputStreamWriter(System.out, "UTF-8");
         /*System.out.println("AST:");
         compileEnv.dumpAst(System.out);*/
-        /*System.out.println("\n\nPROGRAM:");
-        compileEnv.dump(System.out);*/
-        System.out.println("EXECUTE:");
-        compileEnv.execute(outStream);
+        System.out.println("\n\nPROGRAM:");
+        compileEnv.dump(System.out);
+        /*System.out.println("EXECUTE:");
+        compileEnv.execute(outStream);*/
         outStream.flush();
     }
 

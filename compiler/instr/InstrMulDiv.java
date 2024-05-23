@@ -27,7 +27,6 @@ public class InstrMulDiv extends compiler.InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write(m_op.toString());
-        os.write("\n");
+        os.write(String.format("%%%d = %s %%%d, %%%d\n", m_id, m_op.toString(), m_lhsExpr.getId(), m_rhsExpr.getId()));     
     }
 }

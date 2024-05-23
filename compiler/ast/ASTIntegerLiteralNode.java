@@ -35,4 +35,8 @@ public class ASTIntegerLiteralNode extends ASTExprNode {
        return instr;
    }
 
+   public Integer constFold() {
+     return Integer.valueOf(m_value);
+   }
+
 }

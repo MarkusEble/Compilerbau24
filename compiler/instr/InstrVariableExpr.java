@@ -19,8 +19,5 @@ public class InstrVariableExpr extends compiler.InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write("VARIABLE ");
-        os.write(m_variable);
-        os.write("\n");
-    }
+        os.write(String.format("%%%d = LOAD %s\n", m_id, this.m_variable));    }
 }

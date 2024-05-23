@@ -25,7 +25,6 @@ public class InstrUnary extends compiler.InstrIntf{
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write(m_type.toString());
-        os.write("\n");
+        os.write(String.format("%%%d = %s %%%d\n", m_id, m_type.toString(), m_child));     
     }
 }

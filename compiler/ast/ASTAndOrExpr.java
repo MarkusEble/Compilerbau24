@@ -2,13 +2,18 @@ package compiler.ast;
 
 import java.io.OutputStreamWriter;
 
+import compiler.CompileEnvIntf;
+import compiler.InstrIntf;
+import compiler.Token;
+import compiler.TokenIntf.Type;
+
 public class ASTAndOrExpr extends ASTExprNode {
     ASTExprNode lhs, rhs;
-    boolean isOr;
+    Token token;
 
-    public ASTAndOrExpr(boolean or, ASTExprNode left, ASTExprNode right) {
+    public ASTAndOrExpr(Token or, ASTExprNode left, ASTExprNode right) {
         this.lhs = left;
-        this.isOr = or;
+        this.token = or;
         this.rhs = right;
     }
 
@@ -19,7 +24,7 @@ public class ASTAndOrExpr extends ASTExprNode {
         this.lhs.print(outStream, indent + indent);
         outStream.write("\n");
         outStream.write(indent);
-        outStream.write(isOr ? "OR" : "AND");
+        outStream.write(token.toString());
         outStream.write("\n");
         outStream.write(indent);
         this.rhs.print(outStream, indent + indent);
@@ -28,11 +33,18 @@ public class ASTAndOrExpr extends ASTExprNode {
 
     @Override
     public int eval() {
-        if (isOr) {
+        if (token.m_type == Type.OR) {
             return lhs.eval() == 1 || rhs.eval() == 1 ? 1 : 0;
         } else {
             return lhs.eval() == 1 && rhs.eval() == 1 ? 1 : 0;
         }
     }
-
+    @Override
+    public InstrIntf codegen(CompileEnvIntf env) {
+        compiler.InstrIntf lhsExpr = lhs.codegen(env);
+        compiler.InstrIntf rhsExpr = rhs.codegen(env);
+        compiler.InstrIntf resultExpr = new compiler.instr.InstrAndOr(token.m_type, lhsExpr, rhsExpr);
+        env.addInstr(resultExpr);
+        return resultExpr;
+    }
 }
