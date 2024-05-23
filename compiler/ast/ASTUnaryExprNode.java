@@ -1,5 +1,6 @@
 package compiler.ast;
 
+import compiler.InstrIntf;
 import compiler.TokenIntf;
 import compiler.instr.InstrIntegerLiteral;
 import compiler.instr.InstrUnary;
@@ -40,7 +41,9 @@ public class ASTUnaryExprNode extends ASTExprNode {
         Integer foldValue = this.constFold();
 
         if (foldValue != null) {
-            return new InstrIntegerLiteral(foldValue.toString());
+            InstrIntf instruction = new InstrIntegerLiteral(foldValue.toString());
+            env.addInstr(instruction);
+            return instruction;
         }
 
         // create instruction object
