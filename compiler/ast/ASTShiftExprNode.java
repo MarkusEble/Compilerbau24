@@ -1,5 +1,6 @@
 package compiler.ast;
 
+import compiler.InstrIntf;
 import compiler.Token;
 import compiler.TokenIntf.Type;
 import compiler.instr.InstrIntegerLiteral;
@@ -37,7 +38,9 @@ public class ASTShiftExprNode extends ASTExprNode {
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
         Integer constResult = this.constFold();
         if(constResult != null){
-            return new InstrIntegerLiteral(constResult.toString());
+            InstrIntf resultExpr = new InstrIntegerLiteral(constResult.toString());
+            env.addInstr(resultExpr);
+            return resultExpr;
         }
         compiler.InstrIntf rhsExpr = rhsOperand.codegen(env);
         compiler.InstrIntf lhsExpr = lhsOperand.codegen(env);
@@ -53,8 +56,7 @@ public class ASTShiftExprNode extends ASTExprNode {
         if (lhsConst != null && rhsConst != null) {
             if (shiftKeyword.m_type == Type.SHIFTRIGHT) {
                 return lhsConst >> rhsConst;
-            }
-            else {
+            } else {
                 return lhsConst << rhsConst;
             }
         } else {
