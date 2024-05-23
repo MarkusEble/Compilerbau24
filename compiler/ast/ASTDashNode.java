@@ -27,7 +27,9 @@ public class ASTDashNode extends ASTExprNode {
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
         Integer constResult = this.constFold();
         if (constResult != null) {
-            return new compiler.instr.InstrIntegerLiteral(constResult.toString());
+            compiler.InstrIntf literalInstr = new compiler.instr.InstrIntegerLiteral(constResult.toString());
+            compileEnv.addInstr(literalInstr);
+            return literalInstr;
         }
 
         compiler.InstrIntf lhsExpr = lhs.codegen(compileEnv);
