@@ -1,6 +1,8 @@
 package compiler.ast;
 
 import compiler.TokenIntf;
+import compiler.instr.InstrIntegerLiteral;
+import compiler.instr.InstrUnary;
 //import compiler.info.ConstInfo;
 
 import java.io.OutputStreamWriter;
@@ -35,6 +37,12 @@ public class ASTUnaryExprNode extends ASTExprNode {
 
     @Override
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
+        Integer foldValue = this.constFold();
+
+        if (foldValue != null) {
+            return new InstrIntegerLiteral(foldValue.toString());
+        }
+
         // create instruction object
         compiler.InstrIntf childExpr = m_child.codegen(env);
         compiler.InstrIntf resultExpr = new compiler.instr.InstrUnary(m_type, childExpr);
@@ -42,8 +50,18 @@ public class ASTUnaryExprNode extends ASTExprNode {
         return resultExpr;
     }
 
-   /* @Override
-    public ConstInfo constFold() {
-        return new ConstInfo(true, Integer.parseInt(this.m_value));
-    }*/
+   @Override
+    public Integer constFold() {
+        Integer childValue = m_child.constFold();
+
+        if (childValue != null) {
+            if(m_type == TokenIntf.Type.NOT){
+                return childValue > 0 ? 0 : 1;
+            } else if (m_type == TokenIntf.Type.MINUS) {
+                return  - childValue;
+            }
+        }
+
+        return null;
+    }
 }
