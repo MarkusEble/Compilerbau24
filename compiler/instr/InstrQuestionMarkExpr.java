@@ -19,7 +19,7 @@ public class InstrQuestionMarkExpr extends InstrIntf {
 
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
-        m_value = m_condition.getValue() > 0 ? m_lhsInstruction.getValue() : m_rhsInstruction.getValue();
+        m_value = m_condition.getValue() != 0 ? m_lhsInstruction.getValue() : m_rhsInstruction.getValue();
     }
 
     @Override

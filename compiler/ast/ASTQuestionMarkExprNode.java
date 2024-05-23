@@ -2,10 +2,10 @@ package compiler.ast;
 
 import compiler.CompileEnvIntf;
 import compiler.InstrIntf;
+import compiler.instr.InstrIntegerLiteral;
 import compiler.instr.InstrQuestionMarkExpr;
 
 import java.io.OutputStreamWriter;
-import java.util.Optional;
 
 public class ASTQuestionMarkExprNode extends ASTExprNode {
     private final ASTExprNode m_condition;
@@ -20,7 +20,7 @@ public class ASTQuestionMarkExprNode extends ASTExprNode {
 
     @Override
     public int eval() {
-        return m_condition.eval() > 0 ? m_result1.eval() : m_result2.eval();
+        return m_condition.eval() != 0 ? m_result1.eval() : m_result2.eval();
     }
 
     @Override
@@ -38,9 +38,41 @@ public class ASTQuestionMarkExprNode extends ASTExprNode {
         outStream.write("\n");
         m_result2.print(outStream, indent + "  ");
     }
+    @Override
+    public Integer constFold(){
+        Integer constCondition = m_condition.constFold();
+        Integer result = null;
+        if (null != constCondition){
+            if (constCondition != 0){
+                result = m_result1.constFold();
+            } else {
+                result  = m_result2.constFold();
+            }
+        }
+        return result;
+    }
 
     @Override
     public InstrIntf codegen(CompileEnvIntf compileEnvIntf) {
+        // const fold everything
+        Integer constResult = constFold();
+        if (null != constResult){
+            InstrIntf literal = new InstrIntegerLiteral(constResult.toString());
+            compileEnvIntf.addInstr(literal);
+            return literal;
+        }
+
+        // const fold only condition
+        Integer constCondition = m_condition.constFold();
+        if (null != constCondition){
+            if (constCondition != 0){
+                return m_result1.codegen(compileEnvIntf);
+            } else {
+                return m_result2.codegen(compileEnvIntf);
+            }
+        }
+
+        // normal codegen
         InstrIntf result1 = m_result1.codegen(compileEnvIntf);
         InstrIntf result2 = m_result2.codegen(compileEnvIntf);
 
