@@ -11,10 +11,10 @@ public class ASTLoopStmtNode extends ASTStmtNode {
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
-        outStream.write("LOOP ");
+        outStream.write("LOOP");
         outStream.write("\n");
-        m_stmtNode.print(outStream, indent+indent);
-        outStream.write("ENDLOOP\n");
+        m_stmtNode.print(outStream, indent + "  ");
+        outStream.write(indent + "ENDLOOP\n");
     }
 
     @Override
