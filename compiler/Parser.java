@@ -250,6 +250,10 @@ public class Parser {
             return getAssignStmt();
         } else if (nextToken.m_type == TokenIntf.Type.BLOCK) {
             return getBlock2Stmt();
+        } else if (nextToken.m_type == Type.LOOP) {
+            return getLoopStmt();
+        } else if (nextToken.m_type == Type.BREAK) {
+            return getBreakStmt();
         }
         return null;
     }
@@ -288,5 +292,20 @@ public class Parser {
         m_lexer.expect(Type.RBRACE);
 
         return new ASTBlock2StmtNode(stmts);
+    }
+
+    ASTStmtNode getLoopStmt() throws Exception {
+        // LOOP blockStmt ENDLOOP
+        m_lexer.expect(Type.LOOP);
+        ASTStmtNode blockStmt = getBlockStmt();
+        m_lexer.expect(Type.ENDLOOP);
+        return new ASTLoopStmtNode(blockStmt);
+    }
+
+    ASTStmtNode getBreakStmt() throws Exception {
+        // BREAK SEMICOLON
+        m_lexer.expect(Type.BREAK);
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTBreakStmtNode();
     }
 }
