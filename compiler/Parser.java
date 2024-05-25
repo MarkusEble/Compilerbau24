@@ -250,6 +250,8 @@ public class Parser {
             return getAssignStmt();
         } else if (nextToken.m_type == TokenIntf.Type.BLOCK) {
             return getBlock2Stmt();
+        } else if (nextToken.m_type == TokenIntf.Type.EXECUTE) {
+            return getExecuteNStmt();
         }
         return null;
     }
@@ -288,5 +290,15 @@ public class Parser {
         m_lexer.expect(Type.RBRACE);
 
         return new ASTBlock2StmtNode(stmts);
+    }
+
+    ASTStmtNode getExecuteNStmt() throws Exception {
+        // EXECUTE MulDivExpr TIMES BlockStmt SEMICOLON
+        m_lexer.expect(Type.EXECUTE);
+        ASTExprNode mulDivExpr = getMulDivExpr();
+        m_lexer.expect(Type.TIMES);
+        ASTStmtNode blockStmt = getBlockStmt();
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTExecuteNNode(mulDivExpr, blockStmt);
     }
 }
