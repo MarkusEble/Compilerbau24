@@ -3,11 +3,19 @@ package compiler.instr;
 import java.io.OutputStreamWriter;
 
 import compiler.ExecutionEnvIntf;
+import compiler.InstrBlock;
+import compiler.InstrIntf;
 
 public class InstrCondJump extends compiler.InstrIntf {
     compiler.InstrIntf m_cond;
     compiler.InstrBlock m_trueBlock;
     compiler.InstrBlock m_falseBlock;
+
+    public InstrCondJump(InstrIntf m_cond, InstrBlock m_trueBlock, InstrBlock m_falseBlock) {
+        this.m_cond = m_cond;
+        this.m_trueBlock = m_trueBlock;
+        this.m_falseBlock = m_falseBlock;
+    }
 
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {

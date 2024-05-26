@@ -8,19 +8,19 @@ import java.io.OutputStreamWriter;
 
 public class InstrComp extends compiler.InstrIntf{
     private compiler.InstrIntf lhsInstr, rhsInstr;
-    private Token token;
+    private Token.Type type;
 
-    public InstrComp(compiler.InstrIntf lhsInstr, compiler.InstrIntf rhsInstr, Token token){
+    public InstrComp(compiler.InstrIntf lhsInstr, compiler.InstrIntf rhsInstr, Token.Type type){
         this.lhsInstr = lhsInstr;
         this.rhsInstr = rhsInstr;
-        this.token = token;
+        this.type = type;
     }
 
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
-        if(token.m_type == Token.Type.GREATER){
+        if(type == Token.Type.GREATER){
             m_value = lhsInstr.getValue() > rhsInstr.getValue() ? 1 : 0;
-        } else if(token.m_type == Token.Type.LESS){
+        } else if(type == Token.Type.LESS){
             m_value = lhsInstr.getValue() < rhsInstr.getValue() ? 1 : 0;
         } else {
             m_value = lhsInstr.getValue() == rhsInstr.getValue() ? 1 : 0;
@@ -29,6 +29,6 @@ public class InstrComp extends compiler.InstrIntf{
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write(String.format("%%%d = %s %%%d, %%%d\n", m_id, token.toString(), lhsInstr.getId(), rhsInstr.getId()));     
+        os.write(String.format("%%%d = %s %%%d, %%%d\n", m_id, type.toString(), lhsInstr.getId(), rhsInstr.getId()));
     }
 }

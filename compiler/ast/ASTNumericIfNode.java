@@ -1,7 +1,10 @@
 package compiler.ast;
 
 import compiler.CompileEnvIntf;
+import compiler.Token;
 import compiler.TokenIntf;
+import compiler.instr.InstrComp;
+import compiler.instr.InstrIntegerLiteral;
 
 import java.io.OutputStreamWriter;
 
@@ -43,9 +46,43 @@ public class ASTNumericIfNode extends ASTStmtNode {
 
     @Override
     public void codegen(CompileEnvIntf env) {
-        String leonie = "Hallo Leonie";
+        compiler.InstrIntf exprInstr = expr.codegen(env);
+        compiler.InstrIntf zeroLiteral = new InstrIntegerLiteral("0");
+        env.addInstr(zeroLiteral);
 
+        compiler.InstrBlock positiveBlock = env.createBlock("POSITIVE");
+        compiler.InstrBlock negativeBlock = env.createBlock("NEGATIVE");
+        compiler.InstrBlock zeroBlock = env.createBlock("ZERO");
+        compiler.InstrBlock negativeOrZeroBlock = env.createBlock("NEGATIVEORZERO");
+        compiler.InstrBlock blockExit = env.createBlock("EXIT");
 
-        super.codegen(env);
+        compiler.InstrIntf jmpExit = new compiler.instr.InstrJmp(blockExit);
+
+        compiler.InstrIntf compareGreater = new InstrComp(exprInstr, zeroLiteral, TokenIntf.Type.GREATER);
+        compiler.InstrIntf jmpPositive = new compiler.instr.InstrCondJump(compareGreater, positiveBlock, negativeOrZeroBlock);
+//        env.addInstr(exprInstr);
+        env.addInstr(compareGreater);
+        env.addInstr(jmpPositive);
+        env.setCurrentBlock(positiveBlock);
+        pos.codegen(env);
+        env.addInstr(jmpExit);
+
+        env.setCurrentBlock(negativeOrZeroBlock);
+        compiler.InstrIntf compareLess = new InstrComp(exprInstr, zeroLiteral, TokenIntf.Type.LESS);
+        compiler.InstrIntf jmpNegative = new compiler.instr.InstrCondJump(compareLess, negativeBlock, zeroBlock);
+        env.addInstr(compareLess);
+        env.addInstr(jmpNegative);
+        env.setCurrentBlock(negativeBlock);
+        neg.codegen(env);
+        env.addInstr(jmpExit);
+
+        env.setCurrentBlock(zeroBlock);
+        zero.codegen(env);
+        env.addInstr(jmpExit);
+
+        env.setCurrentBlock(blockExit);
+
+//        compiler.InstrIntf resultExpr =  new compiler.instr.InstNumericIf(positiveBlock, negativeBlock, zeroBlock, exprInstr);
+//        env.addInstr(resultExpr);
     }
 }
