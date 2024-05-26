@@ -149,13 +149,24 @@ public class Parser {
         return result;
     }
 
+    ASTExprNode getSpaceshipExpr() throws Exception {
+        ASTExprNode result = getCompareExpr(); //lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while(nextToken.m_type == Type.SPACESHIP) {
+            m_lexer.advance();
+            result = new ASTSpaceshipExprNode(result, getCompareExpr());
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
+    }
+
     ASTExprNode getAndOrExpr() throws Exception {
-        ASTExprNode left = getCompareExpr(); // lhsOperand
+        ASTExprNode left = getSpaceshipExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.AND || nextToken.m_type == TokenIntf.Type.OR) {
             // consume BITAND|BITOR
             m_lexer.advance();
-            ASTExprNode rhsOperand = getCompareExpr();
+            ASTExprNode rhsOperand = getSpaceshipExpr();
             left = new ASTAndOrExpr(nextToken, left, rhsOperand);
             nextToken = m_lexer.lookAhead();
         }
