@@ -67,6 +67,7 @@ public class Lexer implements LexerIntf {
         addKeywordMachine("=", compiler.TokenIntf.Type.ASSIGN);
         addKeywordMachine("^", compiler.TokenIntf.Type.DASH);
         addKeywordMachine("->", compiler.TokenIntf.Type.ARROW);
+        addKeywordMachine("<=>", compiler.TokenIntf.Type.SPACESHIP);
 
         addKeywordMachine("DECLARE", compiler.TokenIntf.Type.DECLARE);
         addKeywordMachine("PRINT", compiler.TokenIntf.Type.PRINT);

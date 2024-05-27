@@ -149,13 +149,24 @@ public class Parser {
         return result;
     }
 
+    ASTExprNode getSpaceshipExpr() throws Exception {
+        ASTExprNode result = getCompareExpr(); //lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while(nextToken.m_type == Type.SPACESHIP) {
+            m_lexer.advance();
+            result = new ASTSpaceshipExprNode(result, getCompareExpr());
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
+    }
+
     ASTExprNode getAndOrExpr() throws Exception {
-        ASTExprNode left = getCompareExpr(); // lhsOperand
+        ASTExprNode left = getSpaceshipExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.AND || nextToken.m_type == TokenIntf.Type.OR) {
             // consume BITAND|BITOR
             m_lexer.advance();
-            ASTExprNode rhsOperand = getCompareExpr();
+            ASTExprNode rhsOperand = getSpaceshipExpr();
             left = new ASTAndOrExpr(nextToken, left, rhsOperand);
             nextToken = m_lexer.lookAhead();
         }
@@ -252,6 +263,10 @@ public class Parser {
             return getBlock2Stmt();
         } else if (nextToken.m_type == TokenIntf.Type.EXECUTE) {
             return getExecuteNStmt();
+        } else if (nextToken.m_type == Type.LOOP) {
+            return getLoopStmt();
+        } else if (nextToken.m_type == Type.BREAK) {
+            return getBreakStmt();
         }
         return null;
     }
@@ -300,5 +315,20 @@ public class Parser {
         ASTStmtNode blockStmt = getBlockStmt();
         m_lexer.expect(Type.SEMICOLON);
         return new ASTExecuteNNode(mulDivExpr, blockStmt);
+
+    ASTStmtNode getLoopStmt() throws Exception {
+        // LOOP blockStmt ENDLOOP
+        m_lexer.expect(Type.LOOP);
+        ASTStmtNode blockStmt = getBlockStmt();
+        m_lexer.expect(Type.ENDLOOP);
+        return new ASTLoopStmtNode(blockStmt);
+    }
+
+    ASTStmtNode getBreakStmt() throws Exception {
+        // BREAK SEMICOLON
+        m_lexer.expect(Type.BREAK);
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTBreakStmtNode();
+
     }
 }

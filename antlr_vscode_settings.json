@@ -1,0 +1,14 @@
+{
+    "java.project.sourcePaths": [
+        "."
+    ],
+    "java.project.referencedLibraries": [
+        "antlr-4.13.1-complete.jar"
+    ],
+    "antlr4.generation.mode": "external",
+    "antlr4.generation.package": "compiler.antlrcompiler",
+    "antlr4.generation.outputDir": "antlrcompiler",
+    "antlr4.generation.createListeners": true,
+    "antlr4.generation.createVisitors": true
+}
+
