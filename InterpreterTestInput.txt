@@ -75,3 +75,21 @@ $IN
 }
 $OUT
 32
+$IN
+// test Numeric If
+{
+  DECLARE in;
+  DECLARE out;
+  in = -2;
+  NUMERIC_IF (in)
+  POSITIVE {
+    out = 1;
+  } NEGATIVE {
+    out = 2;
+  } ZERO {
+    out = 3;
+  }
+  PRINT out;
+}
+$OUT
+2
