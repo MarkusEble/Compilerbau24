@@ -9,6 +9,12 @@ public class InstrCondJump extends compiler.InstrIntf {
     compiler.InstrBlock m_trueBlock;
     compiler.InstrBlock m_falseBlock;
 
+    public InstrCondJump(compiler.InstrIntf m_cond, compiler.InstrBlock m_trueBlock, compiler.InstrBlock m_falseBlock){
+        this.m_cond = m_cond;
+        this.m_trueBlock = m_trueBlock;
+        this.m_falseBlock = m_falseBlock;
+    }
+
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
         int cond = m_cond.getValue();

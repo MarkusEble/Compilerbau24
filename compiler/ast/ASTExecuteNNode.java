@@ -1,9 +1,7 @@
 package compiler.ast;
 
-import compiler.CompileEnvIntf;
-import compiler.InstrIntf;
 import compiler.Token;
-import compiler.instr.InstrIntegerLiteral;
+import compiler.TokenIntf;
 
 import java.io.OutputStreamWriter;
 
@@ -38,21 +36,52 @@ public class ASTExecuteNNode extends ASTStmtNode{
 
     @Override
     public void codegen(compiler.CompileEnvIntf env) {
-        compiler.InstrIntf n = times.codegen(env);
-        
-        compiler.InstrBlock execN = env.createBlock("EXECUTE_N");
+        compiler.InstrBlock execNInit = env.createBlock("EXECUTE_N_INIT");
+        compiler.InstrBlock execNHead = env.createBlock("EXECUTE_N_HEAD");
+        compiler.InstrBlock execNBody = env.createBlock("EXECUTE_N_BODY");
         compiler.InstrBlock execNExit = env.createBlock("EXECUTE_N_EXIT");
-        compiler.InstrIntf jmpBlock = new compiler.instr.InstrJmp(execN);
-        env.addInstr(jmpBlock);
-        env.setCurrentBlock(execN);
+        //Jump to InitBlock
+        compiler.InstrIntf jmpInitBlock = new compiler.instr.InstrJmp(execNInit);
+        env.addInstr(jmpInitBlock);
+        env.setCurrentBlock(execNInit);
+        
+        //Init block creats counter variable and assigns value of given expression to it
+        compiler.Symbol counterSymbol = env.getSymbolTable().createSymbol("counter"); //Ideally append UUID
+        compiler.InstrIntf nInstr = times.codegen(env);
+        compiler.InstrIntf counterInstr = new compiler.instr.InstrVariableExpr(counterSymbol.m_name);
+        compiler.InstrIntf assignCounter = new compiler.instr.InstrAssign(counterSymbol, nInstr);
+        env.addInstr(counterInstr);
+        env.addInstr(assignCounter);
+        //Jump to HeadBlock
+        compiler.InstrIntf jmpHeadBlock = new compiler.instr.InstrJmp(execNHead);
+        env.addInstr(jmpHeadBlock);
+        env.setCurrentBlock(execNHead);
 
-        //Jump into block n times 
-        for(int i = 0; i < n.getValue(); i++){
-            block.codegen(env);
-        }
+        //HeadBlock checks, whether counter is 0 -> If not: jump to Body, If: jump to exit
+        Token greater = new Token();
+        greater.m_type = TokenIntf.Type.GREATER;
+        greater.m_value = ">";
+        compiler.InstrIntf loadCounterInstr = new compiler.instr.InstrVariableExpr(counterSymbol.m_name);
+        compiler.InstrIntf comparisionExpr =new compiler.instr.InstrIntegerLiteral("0");
+        env.addInstr(loadCounterInstr);
+        env.addInstr(comparisionExpr);
+        compiler.InstrIntf condition = new compiler.instr.InstrComp(loadCounterInstr, comparisionExpr, greater);
+        compiler.InstrIntf condJmp = new compiler.instr.InstrCondJump(condition, execNBody, execNExit);
+        env.addInstr(condition);
+        env.addInstr(condJmp);
 
-        compiler.InstrIntf jmpExit = new compiler.instr.InstrJmp(execNExit);
-        env.addInstr(jmpExit);
+        //Execute the block statements and decrement counter by one
+        env.setCurrentBlock(execNBody);
+        block.codegen(env);
+        compiler.InstrIntf loadCounterInstrBlock = new compiler.instr.InstrVariableExpr(counterSymbol.m_name);
+        env.addInstr(loadCounterInstrBlock);
+        compiler.InstrIntf decrement = new compiler.instr.InstrPlusMinus(TokenIntf.Type.MINUS, loadCounterInstrBlock, new compiler.instr.InstrIntegerLiteral("1"));
+        env.addInstr(decrement);
+        assignCounter = new compiler.instr.InstrAssign(counterSymbol, decrement);
+        env.addInstr(assignCounter);
+        env.addInstr(jmpHeadBlock);
+        env.setCurrentBlock(execNHead);
+
         env.setCurrentBlock(execNExit);
     }
 }

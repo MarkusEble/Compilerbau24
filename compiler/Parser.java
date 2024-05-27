@@ -293,9 +293,9 @@ public class Parser {
     }
 
     ASTStmtNode getExecuteNStmt() throws Exception {
-        // EXECUTE MulDivExpr TIMES BlockStmt SEMICOLON
+        // EXECUTE QuestionMarkExpr TIMES BlockStmt SEMICOLON
         m_lexer.expect(Type.EXECUTE);
-        ASTExprNode mulDivExpr = getMulDivExpr();
+        ASTExprNode mulDivExpr = getQuestionMarkExpr();
         m_lexer.expect(Type.TIMES);
         ASTStmtNode blockStmt = getBlockStmt();
         m_lexer.expect(Type.SEMICOLON);
