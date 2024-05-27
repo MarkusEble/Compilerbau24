@@ -58,14 +58,11 @@ public class ASTExecuteNNode extends ASTStmtNode{
         env.setCurrentBlock(execNHead);
 
         //HeadBlock checks, whether counter is 0 -> If not: jump to Body, If: jump to exit
-        Token greater = new Token();
-        greater.m_type = TokenIntf.Type.GREATER;
-        greater.m_value = ">";
         compiler.InstrIntf loadCounterInstr = new compiler.instr.InstrVariableExpr(counterSymbol.m_name);
         compiler.InstrIntf comparisionExpr =new compiler.instr.InstrIntegerLiteral("0");
         env.addInstr(loadCounterInstr);
         env.addInstr(comparisionExpr);
-        compiler.InstrIntf condition = new compiler.instr.InstrComp(loadCounterInstr, comparisionExpr, greater);
+        compiler.InstrIntf condition = new compiler.instr.InstrComp(loadCounterInstr, comparisionExpr, TokenIntf.Type.GREATER);
         compiler.InstrIntf condJmp = new compiler.instr.InstrCondJump(condition, execNBody, execNExit);
         env.addInstr(condition);
         env.addInstr(condJmp);
