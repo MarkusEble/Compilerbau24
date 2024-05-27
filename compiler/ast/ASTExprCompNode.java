@@ -51,7 +51,7 @@ public class ASTExprCompNode extends ASTExprNode{
 
         InstrIntf lhsInstr = lhs.codegen(compileEnv);
         InstrIntf rhsInstr = rhs.codegen(compileEnv);
-        InstrIntf resultExpr = new compiler.instr.InstrComp(lhsInstr, rhsInstr, token);
+        InstrIntf resultExpr = new compiler.instr.InstrComp(lhsInstr, rhsInstr, token.m_type);
         compileEnv.addInstr(resultExpr);
         return resultExpr;
     }

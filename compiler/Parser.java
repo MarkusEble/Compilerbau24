@@ -261,6 +261,8 @@ public class Parser {
             return getAssignStmt();
         } else if (nextToken.m_type == TokenIntf.Type.BLOCK) {
             return getBlock2Stmt();
+        } else if (nextToken.m_type == TokenIntf.Type.NUMERIC_IF) {
+            return getNumericIf();
         } else if (nextToken.m_type == Type.LOOP) {
             return getLoopStmt();
         } else if (nextToken.m_type == Type.BREAK) {
@@ -305,6 +307,29 @@ public class Parser {
         return new ASTBlock2StmtNode(stmts);
     }
 
+    ASTStmtNode getNumericIf() throws Exception {
+//        numeric_if: NUMERIC_IF LPAREN expr RPAREN pos neg zero
+//        pos: POSITIVE blockstmt
+//        neg: NEGATIVE blockstmt
+//        zero: ZERO blockstmt
+        m_lexer.expect(Type.NUMERIC_IF);
+        m_lexer.expect(Type.LPAREN);
+
+        ASTExprNode expr = getQuestionMarkExpr();
+
+        m_lexer.expect(Type.RPAREN);
+
+        m_lexer.expect(Type.POSITIVE);
+        ASTStmtNode pos = getBlockStmt();
+        m_lexer.expect(Type.NEGATIVE);
+        ASTStmtNode neg = getBlockStmt();
+        m_lexer.expect(Type.ZERO);
+        ASTStmtNode zero = getBlockStmt();
+
+
+        return new ASTNumericIfNode(expr, pos, neg, zero);
+    }
+    
     ASTStmtNode getLoopStmt() throws Exception {
         // LOOP blockStmt ENDLOOP
         m_lexer.expect(Type.LOOP);
