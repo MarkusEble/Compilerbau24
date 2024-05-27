@@ -1,3 +1,6 @@
 .idea/
 out/
 *.iml
+.vscode/
+compiler/.antlr/
+compiler/antlrcompiler

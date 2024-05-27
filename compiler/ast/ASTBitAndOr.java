@@ -36,10 +36,31 @@ public class ASTBitAndOr extends ASTExprNode {
 
     @Override
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        Integer constResult = this.constFold();
+        if(constResult != null){
+            compiler.InstrIntf instr = new compiler.instr.InstrIntegerLiteral(constResult.toString());
+            compileEnv.addInstr(instr);
+            return instr;
+        }
+
         compiler.InstrIntf lhsExpr = m_lhs.codegen(compileEnv);
         compiler.InstrIntf rhsExpr = m_rhs.codegen(compileEnv);
         compiler.InstrIntf resultExpr = new compiler.instr.InstrBitAndOr(m_operator, lhsExpr, rhsExpr);
         compileEnv.addInstr(resultExpr);
         return resultExpr;
+    }
+
+    @Override
+    public Integer constFold() {
+        Integer lhs = m_lhs.constFold();
+        Integer rhs = m_rhs.constFold();
+        if(lhs != null && rhs != null){
+            if (this.m_operator == TokenIntf.Type.BITAND) {
+                return lhs & rhs;
+            } else if (this.m_operator == TokenIntf.Type.BITOR) {
+                return lhs | rhs;
+            }
+        }
+        return null;
     }
 }

@@ -6,7 +6,7 @@ public class ParserMain {
         compiler.Lexer lexer = new compiler.Lexer();
         compiler.Parser parser = new compiler.Parser(lexer, new compiler.SymbolTable(), null);
         //compiler.ast.ASTExprNode rootExpr = parser.parseExpression("2^3 < 7");
-        compiler.ast.ASTStmtNode printStmt = parser.parseStmt("{DECLARE a; a = -2; NUMERIC_IF (a) POSITIVE { a = a+2; } NEGATIVE { a = a-2; } ZERO { a = 0; } PRINT a;}");
+        compiler.ast.ASTStmtNode printStmt = parser.parseStmt("{DECLARE a;\n DECLARE b\n; a = 1 + 2;\nb = 5;\nPRINT 2+2?5+b:0;\n}");
         printStmt.execute();
         //OutputStreamWriter outputWriter = new OutputStreamWriter(System.out);
         //rootExpr.print(outputWriter, "  ");
