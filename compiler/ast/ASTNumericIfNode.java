@@ -4,6 +4,7 @@ import compiler.CompileEnvIntf;
 import compiler.Token;
 import compiler.TokenIntf;
 import compiler.instr.InstrComp;
+import compiler.instr.InstrCondJump;
 import compiler.instr.InstrIntegerLiteral;
 
 import java.io.OutputStreamWriter;
@@ -46,43 +47,49 @@ public class ASTNumericIfNode extends ASTStmtNode {
 
     @Override
     public void codegen(CompileEnvIntf env) {
+        //NUMERIC_IF(expr)
         compiler.InstrIntf exprInstr = expr.codegen(env);
+        //Es wird immer mit 0 verglichen
         compiler.InstrIntf zeroLiteral = new InstrIntegerLiteral("0");
         env.addInstr(zeroLiteral);
 
         compiler.InstrBlock positiveBlock = env.createBlock("POSITIVE");
+        compiler.InstrBlock negativeOrZeroBlock = env.createBlock("NEGATIVE_OR_ZERO");
         compiler.InstrBlock negativeBlock = env.createBlock("NEGATIVE");
         compiler.InstrBlock zeroBlock = env.createBlock("ZERO");
-        compiler.InstrBlock negativeOrZeroBlock = env.createBlock("NEGATIVEORZERO");
-        compiler.InstrBlock blockExit = env.createBlock("EXIT");
+        compiler.InstrBlock exitBlock = env.createBlock("EXIT");
 
-        compiler.InstrIntf jmpExit = new compiler.instr.InstrJmp(blockExit);
+        compiler.InstrIntf jmpExit = new compiler.instr.InstrJmp(exitBlock);
 
+        //wenn expr>0 -> positiv, ansonsten negativ oder null
         compiler.InstrIntf compareGreater = new InstrComp(exprInstr, zeroLiteral, TokenIntf.Type.GREATER);
-        compiler.InstrIntf jmpPositive = new compiler.instr.InstrCondJump(compareGreater, positiveBlock, negativeOrZeroBlock);
-//        env.addInstr(exprInstr);
+        compiler.InstrIntf jmpPositive = new InstrCondJump(compareGreater, positiveBlock, negativeOrZeroBlock);
+
         env.addInstr(compareGreater);
         env.addInstr(jmpPositive);
+
+        //codegen für den positiven Block
         env.setCurrentBlock(positiveBlock);
         pos.codegen(env);
         env.addInstr(jmpExit);
 
+        //wenn expr<0 -> negativ, sonst null
         env.setCurrentBlock(negativeOrZeroBlock);
         compiler.InstrIntf compareLess = new InstrComp(exprInstr, zeroLiteral, TokenIntf.Type.LESS);
-        compiler.InstrIntf jmpNegative = new compiler.instr.InstrCondJump(compareLess, negativeBlock, zeroBlock);
+        compiler.InstrIntf jmpNegative = new InstrCondJump(compareLess, negativeBlock, zeroBlock);
         env.addInstr(compareLess);
         env.addInstr(jmpNegative);
+
+        //codegen für negativen Block
         env.setCurrentBlock(negativeBlock);
         neg.codegen(env);
         env.addInstr(jmpExit);
 
+        //codegen für null Block
         env.setCurrentBlock(zeroBlock);
         zero.codegen(env);
         env.addInstr(jmpExit);
 
-        env.setCurrentBlock(blockExit);
-
-//        compiler.InstrIntf resultExpr =  new compiler.instr.InstNumericIf(positiveBlock, negativeBlock, zeroBlock, exprInstr);
-//        env.addInstr(resultExpr);
+        env.setCurrentBlock(exitBlock);
     }
 }
