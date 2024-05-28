@@ -23,7 +23,7 @@ public class ASTBreakStmtNode extends ASTStmtNode {
 
     @Override
     public void codegen(compiler.CompileEnvIntf compileEnv) {
-        compiler.InstrBlock exitBlock = compileEnv.popLoopStack();
+        compiler.InstrBlock exitBlock = compileEnv.peekLoopStack();
         compiler.InstrIntf jmpExit = new InstrJmp(exitBlock);
         compileEnv.addInstr(jmpExit);
     }

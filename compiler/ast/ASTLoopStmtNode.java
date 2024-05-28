@@ -42,6 +42,7 @@ public class ASTLoopStmtNode extends ASTStmtNode {
         m_stmtNode.codegen(compileEnv);
         compileEnv.addInstr(jmpLoop);
 
+        compileEnv.popLoopStack();
         compileEnv.setCurrentBlock(exitBlock);
     }
 
