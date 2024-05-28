@@ -3,16 +3,19 @@ package compiler;
 import compiler.TokenIntf.Type;
 import compiler.ast.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Parser {
     private Lexer m_lexer;
     private SymbolTableIntf m_symbolTable;
+    private final FunctionTableIntf m_functionTable;
 
-    public Parser(Lexer lexer, SymbolTableIntf symbolTable, FunctionTableIntf fucntionTable) {
+    public Parser(Lexer lexer, SymbolTableIntf symbolTable, FunctionTableIntf functionTable) {
         m_lexer = lexer;
         m_symbolTable = symbolTable;
+        m_functionTable = functionTable;
     }
 
     public ASTExprNode parseExpression(String val) throws Exception {
@@ -36,6 +39,9 @@ public class Parser {
         } else if (token.m_type == Type.IDENT) {
             // parentheseExpr : varExpr
             return getVariableExpr();
+        }else if (token.m_type == Type.CALL) {
+            // parentheseExpr : varExpr
+            return getFunctionCallExpr();
         } else {
             // parentheseExpr : LParen sumExpr RParen
             m_lexer.expect(TokenIntf.Type.LPAREN); //consume Lparen
@@ -45,6 +51,73 @@ public class Parser {
         }
     }
 
+    private ASTExprNode getFunctionCallExpr() throws Exception{
+        // functionCallExpr := CALL IDENT LPAREN exprList RPAREN SEMICOLON
+        m_lexer.expect(Type.CALL);
+        Token functionNameToken = m_lexer.lookAhead();
+        m_lexer.expect(Type.IDENT);
+        m_lexer.expect(Type.LPAREN);
+        Token nextToken = m_lexer.lookAhead();
+        List<ASTExprNode> expressions = new ArrayList<>();
+        if (nextToken.m_type != Type.RPAREN){
+             expressions = getExpressionList();
+        }
+        m_lexer.expect(Type.RPAREN);
+
+        return new ASTExprFunctionCallNode(functionNameToken.m_value, expressions);
+    }
+
+    private List<ASTExprNode> getExpressionList() throws Exception{
+        // exprList := questionMarkExpr (COMMA questionMarkExpr)*
+        List<ASTExprNode> expressionList = new ArrayList<>();
+        ASTExprNode firstExpr = getQuestionMarkExpr();
+        expressionList.add(firstExpr);
+        Token nextToken = m_lexer.lookAhead();
+        while(nextToken.m_type == Type.COMMA){
+            m_lexer.advance();
+            ASTExprNode expressionRecursive = getQuestionMarkExpr();
+            expressionList.add(expressionRecursive);
+            nextToken = m_lexer.lookAhead();
+        }
+        return expressionList;
+
+    }
+    private List<String> getParamList() throws Exception{
+        // paramList := IDENT (COMMA IDENT)*
+        List<String> paramList = new ArrayList<>();
+        Token nextToken = m_lexer.lookAhead();
+        if (nextToken.m_type == Type.IDENT) {
+            m_lexer.advance();
+            paramList.add(nextToken.m_value);
+            nextToken = m_lexer.lookAhead();
+            while (nextToken.m_type == Type.COMMA) {
+                m_lexer.advance();
+                nextToken = m_lexer.lookAhead();
+                m_lexer.expect(Type.IDENT);
+                paramList.add(nextToken.m_value);
+                nextToken = m_lexer.lookAhead();
+            }
+        }
+        return paramList;
+
+    }
+
+    ASTStmtNode getFunctionStmt() throws Exception{
+        m_lexer.expect(Type.FUNCTION);
+        Token functionName = m_lexer.lookAhead();
+        m_lexer.expect(Type.IDENT);
+        m_lexer.expect(Type.LPAREN);
+        List<String> paramList = getParamList();
+        paramList.forEach(param -> {
+            m_symbolTable.createSymbol(param);
+        });
+        m_lexer.expect(Type.RPAREN);
+        ASTStmtNode stmtList = getBlockStmt();
+        if(m_lexer.lookAhead().m_type == Type.SEMICOLON){
+            m_lexer.advance();  // Semicolon is optional
+        }
+        return new ASTFunctionStmtNode(functionName.m_value,paramList,stmtList,m_functionTable,m_symbolTable);
+    }
     ASTExprNode getArrowExpr() throws Exception {
         ASTExprNode result = getParantheseExpr();
         Token nextToken = m_lexer.lookAhead();
@@ -273,6 +346,10 @@ public class Parser {
             return getWhileStmt();
         } else if (nextToken.m_type == Type.DO) {
             return getDoWhileStmt();
+        } else if (nextToken.m_type == Type.RETURN) {
+            return getReturnStmt();
+        } else if (nextToken.m_type == Type.FUNCTION) {
+            return getFunctionStmt();
         }
         return null;
     }
@@ -313,6 +390,14 @@ public class Parser {
         return new ASTBlock2StmtNode(stmts);
     }
 
+    private ASTStmtNode getReturnStmt() throws Exception{
+        m_lexer.expect(Type.RETURN);
+        ASTExprNode returnValue = getQuestionMarkExpr();
+        ASTStmtNode returnStmt = new ASTReturnStmtNode(returnValue);
+        m_lexer.expect(Type.SEMICOLON);
+        return returnStmt;
+    }
+
     ASTStmtNode getSwitchStmt() throws Exception{
         // switchStmt: SWITCH LPAREN expr RPAREN LBRACE caseList RBRACE
         m_lexer.expect(Type.SWITCH);
@@ -346,7 +431,7 @@ public class Parser {
         List<ASTStmtNode> stmtList = getStmtList();
         return new ASTCaseNode(number, stmtList);
     }
-  
+
     ASTStmtNode getNumericIf() throws Exception {
 //        numeric_if: NUMERIC_IF LPAREN expr RPAREN pos neg zero
 //        pos: POSITIVE blockstmt
@@ -369,7 +454,7 @@ public class Parser {
 
         return new ASTNumericIfNode(expr, pos, neg, zero);
     }
-    
+
     ASTStmtNode getLoopStmt() throws Exception {
         // LOOP blockStmt ENDLOOP
         m_lexer.expect(Type.LOOP);
