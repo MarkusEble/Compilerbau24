@@ -1,5 +1,7 @@
 package compiler.ast;
 
+import compiler.instr.InstrJmp;
+
 import java.io.OutputStreamWriter;
 
 public class ASTLoopStmtNode extends ASTStmtNode {
@@ -30,7 +32,17 @@ public class ASTLoopStmtNode extends ASTStmtNode {
 
     @Override
     public void codegen(compiler.CompileEnvIntf compileEnv) {
+        compiler.InstrBlock loopBlock = compileEnv.createBlock("LOOP");
+        compiler.InstrBlock exitBlock = compileEnv.createBlock("LOOP_EXIT");
 
+        compiler.InstrIntf jmpLoop = new InstrJmp(loopBlock);
+
+        compileEnv.setCurrentBlock(loopBlock);
+        compileEnv.pushLoopStack(exitBlock);
+        m_stmtNode.codegen(compileEnv);
+        compileEnv.addInstr(jmpLoop);
+
+        compileEnv.setCurrentBlock(exitBlock);
     }
 
     static class BreakLoopException extends RuntimeException {
