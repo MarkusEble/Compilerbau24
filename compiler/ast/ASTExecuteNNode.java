@@ -1,6 +1,5 @@
 package compiler.ast;
 
-import compiler.Token;
 import compiler.TokenIntf;
 
 import java.io.OutputStreamWriter;
@@ -10,6 +9,8 @@ public class ASTExecuteNNode extends ASTStmtNode{
 
     public ASTExprNode times;
     public ASTStmtNode block;
+
+    private static int symbolCount = 0;
 
     public ASTExecuteNNode(ASTExprNode times, ASTStmtNode block){
         this.times = times;
@@ -46,7 +47,8 @@ public class ASTExecuteNNode extends ASTStmtNode{
         env.setCurrentBlock(execNInit);
         
         //Init block creats counter variable and assigns value of given expression to it
-        compiler.Symbol counterSymbol = env.getSymbolTable().createSymbol("counter"); //Ideally append UUID
+        compiler.Symbol counterSymbol = env.getSymbolTable().createSymbol("$counter" + symbolCount);
+        symbolCount++;
         compiler.InstrIntf nInstr = times.codegen(env);
         compiler.InstrIntf counterInstr = new compiler.instr.InstrVariableExpr(counterSymbol.m_name);
         compiler.InstrIntf assignCounter = new compiler.instr.InstrAssign(counterSymbol, nInstr);
