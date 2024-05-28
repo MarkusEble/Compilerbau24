@@ -70,6 +70,7 @@ public class ASTForNode extends ASTStmtNode {
 
         env.setCurrentBlock(forBody);
         m_block.codegen(env);
+        m_stmt_action.codegen(env);
         env.addInstr(new InstrJmp(forHeader));
 
         env.setCurrentBlock(forExit);
