@@ -53,15 +53,12 @@ public class ASTSwitchNode extends ASTStmtNode{
         InstrBlock blockExit = env.createBlock("SWITCH_EXIT");
 
         InstrIntf expr = m_expr.codegen(env);
-        //would be better if InstrComp would take Token.Type instead of Token...
-        Token token = new Token();
-        token.m_type = Type.EQUAL;
 
         for(ASTCaseNode caseNode : m_caseList){
             InstrIntf compare = new InstrComp(
                 expr,
                 new InstrIntegerLiteral(String.valueOf(caseNode.getNumber())),
-                token
+                Type.EQUAL
             );
 
             InstrBlock blockCode = env.createBlock("CASE_" + caseNode.getNumber());
