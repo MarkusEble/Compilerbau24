@@ -7,7 +7,6 @@ public class InterpreterTest implements test.TestCaseIntf {
         compiler.CompileEnv env = new compiler.CompileEnv(input, false);
         env.compile();
         env.execute(outputWriter);
-        outputWriter.write("\n");
         outputWriter.flush();
     }
 
