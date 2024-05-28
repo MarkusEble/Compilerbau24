@@ -36,6 +36,7 @@ public class ASTLoopStmtNode extends ASTStmtNode {
         compiler.InstrBlock exitBlock = compileEnv.createBlock("LOOP_EXIT");
 
         compiler.InstrIntf jmpLoop = new InstrJmp(loopBlock);
+        compileEnv.addInstr(jmpLoop);
 
         compileEnv.setCurrentBlock(loopBlock);
         compileEnv.pushLoopStack(exitBlock);
