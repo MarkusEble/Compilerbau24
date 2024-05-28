@@ -61,6 +61,7 @@ public class ASTForNode extends ASTStmtNode {
 
         env.setCurrentBlock(beforeFor);
         m_stmt_assign.codegen(env);
+        env.addInstr(new InstrJmp(forHeader));
 
         env.setCurrentBlock(forHeader);
         InstrIntf expr = m_stmt_condition.codegen(env);
