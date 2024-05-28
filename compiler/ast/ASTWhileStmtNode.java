@@ -29,18 +29,22 @@ public class ASTWhileStmtNode extends ASTStmtNode {
 
     @Override
     public void codegen(compiler.CompileEnvIntf env) {
-        compiler.InstrBlock whileBlock = env.createBlock("WHILE");
+        compiler.InstrBlock whileConditionBlock = env.createBlock("WHILE_CONDITION");
+        compiler.InstrBlock whileBlock = env.createBlock("WHILE_BODY");
         compiler.InstrBlock whileExit = env.createBlock("WHILE_EXIT");
 
+        compiler.InstrIntf jmpCondition = new compiler.instr.InstrJmp(whileConditionBlock);
+        env.addInstr(jmpCondition);
+
+        env.setCurrentBlock(whileConditionBlock);
         compiler.InstrIntf condition = m_expr.codegen(env);
         compiler.InstrIntf condJmp = new compiler.instr.InstrCondJump(condition, whileBlock, whileExit);
         env.addInstr(condJmp);
 
         env.setCurrentBlock(whileBlock);
         m_blockStmt.codegen(env);
-        compiler.InstrIntf condition2 = m_expr.codegen(env);
-        compiler.InstrIntf condJmp2 = new compiler.instr.InstrCondJump(condition2, whileBlock, whileExit);
-        env.addInstr(condJmp2);
+        compiler.InstrIntf jmpBack = new compiler.instr.InstrJmp(whileConditionBlock);
+        env.addInstr(jmpBack);
 
         env.setCurrentBlock(whileExit);
     }
