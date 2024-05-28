@@ -261,6 +261,8 @@ public class Parser {
             return getAssignStmt();
         } else if (nextToken.m_type == TokenIntf.Type.BLOCK) {
             return getBlock2Stmt();
+        }else if (nextToken.m_type == TokenIntf.Type.SWITCH) {
+            return getSwitchStmt();
         } else if (nextToken.m_type == TokenIntf.Type.NUMERIC_IF) {
             return getNumericIf();
         } else if (nextToken.m_type == Type.LOOP) {
@@ -280,7 +282,7 @@ public class Parser {
         // stmtList: epsilon
         List<ASTStmtNode> stmts = new LinkedList<>();
         TokenIntf nextToken = m_lexer.lookAhead();
-        while (nextToken.m_type != Type.RBRACE && nextToken.m_type != Type.EOF) {
+        while (nextToken.m_type != Type.RBRACE && nextToken.m_type != Type.EOF && nextToken.m_type != Type.CASE) {
             ASTStmtNode stmt = getStmt();
             stmts.add(stmt);
             nextToken = m_lexer.lookAhead();
@@ -311,6 +313,40 @@ public class Parser {
         return new ASTBlock2StmtNode(stmts);
     }
 
+    ASTStmtNode getSwitchStmt() throws Exception{
+        // switchStmt: SWITCH LPAREN expr RPAREN LBRACE caseList RBRACE
+        m_lexer.expect(Type.SWITCH);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode expr = getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.LBRACE);
+        List<ASTCaseNode> caseList = getCaseList();
+        m_lexer.expect(Type.RBRACE);
+        return new ASTSwitchNode(expr, caseList);
+    }
+
+    List<ASTCaseNode> getCaseList() throws Exception{
+        // caseList: case | case caseList
+        Token token;
+        List<ASTCaseNode> caseList = new LinkedList<>();
+        do {
+            caseList.add(getCase());
+            token = m_lexer.lookAhead();
+        } while(token.m_type == Type.CASE);
+        return caseList;
+    }
+
+    ASTCaseNode getCase() throws Exception{
+        // case: CASE NUMBER COLON stmtList
+        m_lexer.expect(Type.CASE);
+        String numberRaw = m_lexer.lookAhead().m_value;
+        m_lexer.expect(Type.INTEGER);
+        int number = Integer.parseInt(numberRaw);
+        m_lexer.expect(Type.DOUBLECOLON);
+        List<ASTStmtNode> stmtList = getStmtList();
+        return new ASTCaseNode(number, stmtList);
+    }
+  
     ASTStmtNode getNumericIf() throws Exception {
 //        numeric_if: NUMERIC_IF LPAREN expr RPAREN pos neg zero
 //        pos: POSITIVE blockstmt
@@ -347,6 +383,7 @@ public class Parser {
         m_lexer.expect(Type.BREAK);
         m_lexer.expect(Type.SEMICOLON);
         return new ASTBreakStmtNode();
+
     }
 
     ASTStmtNode getWhileStmt() throws Exception {
