@@ -1,5 +1,7 @@
 package compiler.ast;
 
+import compiler.instr.InstrJmp;
+
 import java.io.OutputStreamWriter;
 
 public class ASTBreakStmtNode extends ASTStmtNode {
@@ -21,6 +23,8 @@ public class ASTBreakStmtNode extends ASTStmtNode {
 
     @Override
     public void codegen(compiler.CompileEnvIntf compileEnv) {
-
+        compiler.InstrBlock exitBlock = compileEnv.peekLoopStack();
+        compiler.InstrIntf jmpExit = new InstrJmp(exitBlock);
+        compileEnv.addInstr(jmpExit);
     }
 }
