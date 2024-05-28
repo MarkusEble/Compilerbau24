@@ -269,6 +269,10 @@ public class Parser {
             return getLoopStmt();
         } else if (nextToken.m_type == Type.BREAK) {
             return getBreakStmt();
+        } else if (nextToken.m_type == Type.WHILE) {
+            return getWhileStmt();
+        } else if (nextToken.m_type == Type.DO) {
+            return getDoWhileStmt();
         }
         return null;
     }
@@ -380,5 +384,26 @@ public class Parser {
         m_lexer.expect(Type.SEMICOLON);
         return new ASTBreakStmtNode();
 
+    }
+
+    ASTStmtNode getWhileStmt() throws Exception {
+        // WHILE LPAREN expr RPAREN blockStmt
+        m_lexer.expect(Type.WHILE);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode expr = getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        ASTStmtNode blockStmt = getBlockStmt();
+        return new ASTWhileStmtNode(blockStmt, expr);
+    }
+
+    ASTStmtNode getDoWhileStmt() throws Exception {
+        // DO blockstmt WHILE LPAREN expr RPAREN
+        m_lexer.expect(Type.DO);
+        ASTStmtNode blockStmt = getBlockStmt();
+        m_lexer.expect(Type.WHILE);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode expr = getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        return new ASTDoWhileStmtNode(blockStmt, expr);
     }
 }
