@@ -380,17 +380,6 @@ public class Parser {
             INITIALIZATION  := STATEMENT | epsilon
             CONDITION       := EXPRESSION | epsilon
             ACTION          := STATEMENT | epsilon
-
-            FOR             := 'for'
-            LPAREN          := '('
-            RPAREN          := ')'
-            L_CURLY_PAREN   := '{'
-            R_CURLY_PAREN   := '}'
-            SEMICOLON       := ';'
-
-            STATEMENT       := # statement aus der Vorlesung #
-            BLOCK           := # auch aus der Vorlesung #
-            EXPRESSION      := # auch aus der Vorlesung #
         */
 
         m_lexer.expect(Type.FOR);
@@ -411,7 +400,7 @@ public class Parser {
         return new ASTForNode(
                 stmt,
                 expr,
-                stmt,
+                action,
                 block
         );
     }

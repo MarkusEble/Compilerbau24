@@ -1,5 +1,11 @@
 package compiler.ast;
 
+import compiler.CompileEnvIntf;
+import compiler.InstrIntf;
+import compiler.instr.InstrComp;
+import compiler.instr.InstrCondJump;
+import compiler.instr.InstrJmp;
+
 import java.io.OutputStreamWriter;
 
 public class ASTForNode extends ASTStmtNode {
@@ -35,6 +41,31 @@ public class ASTForNode extends ASTStmtNode {
 
     @Override
     public void execute() {
+    }
 
+    @Override
+    public void codegen(CompileEnvIntf env) {
+        compiler.InstrBlock beforeFor = env.createBlock("BEFORE_FOR");
+        compiler.InstrBlock forHeader = env.createBlock("FOR_HEAD");
+        compiler.InstrBlock forBody = env.createBlock("FOR_BODY");
+        compiler.InstrBlock forExit = env.createBlock("FOR_EXIT");
+
+        // Execute the first statement first and only once
+        env.addInstr(new InstrJmp(beforeFor));
+
+        env.setCurrentBlock(beforeFor);
+        m_stmt_assign.codegen(env);
+
+        env.setCurrentBlock(forHeader);
+        InstrIntf expr = m_stmt_condition.codegen(env);
+        InstrIntf condJump = new InstrCondJump(expr, forBody, forExit);
+        env.addInstr(condJump);
+
+        env.setCurrentBlock(forBody);
+        m_block.codegen(env);
+        env.addInstr(new InstrJmp(forHeader));
+
+        env.setCurrentBlock(forExit);
+        // TODO: ?
     }
 }
