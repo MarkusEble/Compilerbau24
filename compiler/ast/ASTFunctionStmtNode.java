@@ -1,8 +1,7 @@
 package compiler.ast;
 
 import compiler.CompileEnvIntf;
-import compiler.InstrIntf;
-import compiler.instr.InstrFunctionExcecution;
+import compiler.instr.InstrFunctionLoadParameter;
 
 import java.io.OutputStreamWriter;
 import java.util.List;
@@ -31,30 +30,36 @@ public class ASTFunctionStmtNode extends ASTStmtNode {
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent + "FUNCTION ");
-        outStream.write(functionName + " LPAREN ");
+        outStream.write(functionName + " ( ");
         for (String p : paramList) {
             outStream.write(p + " ");
         }
-        outStream.write("RPAREN LBRACE\n");
+        outStream.write(") {\n");
         statementList.print(outStream, indent + "  ");
-        outStream.write(indent + "RBRACE\n");
+        outStream.write(indent + "}\n");
     }
 
     @Override
     public void execute() {
+        // execute statements in function
         statementList.execute();
     }
 
     @Override
     public void codegen(CompileEnvIntf env) {
+        // add instructions of a function to new code block
+        // behaves neutral current Block
         compiler.InstrBlock currentBlock = env.getCurrentBlock();
+
+        // create and register new code block
         compiler.InstrBlock functionBlock = env.createBlock("FUNCTION");
         functionTable.createFunction(functionName, functionBlock, paramList);
 
-        compiler.InstrIntf functionExecution = new InstrFunctionExcecution(symbolTable, paramList);
-
         env.setCurrentBlock(functionBlock);
+        // load parameter instruction
+        compiler.InstrIntf functionExecution = new InstrFunctionLoadParameter(symbolTable, paramList);
         env.addInstr(functionExecution);
+
         statementList.codegen(env);
 
         env.setCurrentBlock(currentBlock);

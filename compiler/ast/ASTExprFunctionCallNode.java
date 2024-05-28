@@ -6,8 +6,6 @@ import compiler.instr.InstrPopReturn;
 
 import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.ListIterator;
-
 public class ASTExprFunctionCallNode extends ASTExprNode{
     private final List<ASTExprNode> paramList;
     private final String functionName;
@@ -33,13 +31,16 @@ public class ASTExprFunctionCallNode extends ASTExprNode{
 
     @Override
     public InstrIntf codegen(CompileEnvIntf env) {
+        // Generate parameters
         List<InstrIntf>parameterValues = paramList.stream().map(node -> node.codegen(env)).toList();
 
+        // Get instructions of function
         compiler.InstrBlock functionBlock = env.getFunctionTable().getFunction(functionName).m_body;
 
+        // Create instructions for function and return call
         InstrIntf functionInstr = new InstrFunctionCall(parameterValues,functionBlock);
-        env.addInstr(functionInstr);
         InstrIntf returnInstr = new InstrPopReturn();
+        env.addInstr(functionInstr);
         env.addInstr(returnInstr);
         return returnInstr;
     }

@@ -52,12 +52,13 @@ public class Parser {
     }
 
     private ASTExprNode getFunctionCallExpr() throws Exception{
-        // functionCallExpr := CALL IDENT LPAREN exprList RPAREN SEMICOLON
+        // functionCallExpr := CALL IDENT LPAREN (exprList)? RPAREN
         m_lexer.expect(Type.CALL);
         Token functionNameToken = m_lexer.lookAhead();
         m_lexer.expect(Type.IDENT);
         m_lexer.expect(Type.LPAREN);
         Token nextToken = m_lexer.lookAhead();
+        // expressionList can be optional
         List<ASTExprNode> expressions = new ArrayList<>();
         if (nextToken.m_type != Type.RPAREN){
              expressions = getExpressionList();
@@ -103,6 +104,7 @@ public class Parser {
     }
 
     ASTStmtNode getFunctionStmt() throws Exception{
+        // FunctionStmt := Function IDENT LPAREN paramList blockStmt (SEMICOLON)?
         m_lexer.expect(Type.FUNCTION);
         Token functionName = m_lexer.lookAhead();
         m_lexer.expect(Type.IDENT);

@@ -6,11 +6,10 @@ import compiler.InstrIntf;
 
 import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.ListIterator;
 
 public class InstrFunctionCall extends InstrIntf {
-    private List<InstrIntf> parameters;
-    private compiler.InstrBlock functionBlock;
+    private final List<InstrIntf> parameters;
+    private final compiler.InstrBlock functionBlock;
 
     public InstrFunctionCall(List<InstrIntf> parameters, InstrBlock functionBlock) {
         this.parameters = parameters;
@@ -19,11 +18,10 @@ public class InstrFunctionCall extends InstrIntf {
 
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
-        // push to stack
+        // push return address and parameters to stack
         env.pushReturnAddr(env.getInstrIter());
-        parameters.forEach(param -> {
-            env.push(param.getValue());
-        });
+        parameters.forEach(param -> env.push(param.getValue()));
+        // change instructions to function
         env.setInstrIter(functionBlock.getIterator());
     }
 
