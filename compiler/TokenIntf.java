@@ -30,6 +30,7 @@ public abstract class TokenIntf {
         DOUBLECOLON,
 		DASH,
 		ARROW,
+		SPACESHIP,
 		LINECOMMENT,
 		MULTILINECOMMENT,
 		WHITESPACE,
@@ -54,6 +55,10 @@ public abstract class TokenIntf {
         CALL,
         RETURN,
         BLOCK,
+		NUMERIC_IF,
+		POSITIVE,
+		NEGATIVE,
+		ZERO,
 		DEFAULT,
 	}
 

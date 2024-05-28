@@ -5,6 +5,8 @@ import compiler.InstrIntf;
 import java.io.OutputStreamWriter;
 
 import compiler.ExecutionEnvIntf;
+import compiler.InstrBlock;
+import compiler.InstrIntf;
 
 public class InstrCondJump extends compiler.InstrIntf {
     compiler.InstrIntf m_cond;

@@ -67,6 +67,7 @@ public class Lexer implements LexerIntf {
         addKeywordMachine("=", compiler.TokenIntf.Type.ASSIGN);
         addKeywordMachine("^", compiler.TokenIntf.Type.DASH);
         addKeywordMachine("->", compiler.TokenIntf.Type.ARROW);
+        addKeywordMachine("<=>", compiler.TokenIntf.Type.SPACESHIP);
 
         addKeywordMachine("DECLARE", compiler.TokenIntf.Type.DECLARE);
         addKeywordMachine("PRINT", compiler.TokenIntf.Type.PRINT);
@@ -86,6 +87,10 @@ public class Lexer implements LexerIntf {
         addKeywordMachine("CALL", compiler.TokenIntf.Type.CALL);
         addKeywordMachine("RETURN", compiler.TokenIntf.Type.RETURN);
         addKeywordMachine("BLOCK", compiler.TokenIntf.Type.BLOCK);
+        addKeywordMachine("NUMERIC_IF", compiler.TokenIntf.Type.NUMERIC_IF);
+        addKeywordMachine("POSITIVE", TokenIntf.Type.POSITIVE);
+        addKeywordMachine("NEGATIVE", TokenIntf.Type.NEGATIVE);
+        addKeywordMachine("ZERO", TokenIntf.Type.ZERO);
         addKeywordMachine("DEFAULT", compiler.TokenIntf.Type.DEFAULT);
         
         addMachine(new compiler.machines.IdentifierMachine());

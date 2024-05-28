@@ -1,5 +1,8 @@
 package compiler.ast;
 
+import compiler.InstrIntf;
+import compiler.instr.InstrIntegerLiteral;
+
 import java.io.OutputStreamWriter;
 
 public class ASTParantheseNode extends ASTExprNode {
@@ -16,6 +19,12 @@ public class ASTParantheseNode extends ASTExprNode {
     }
 
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf env) {
+        Integer constResult = this.constFold();
+        if (constResult != null) {
+            InstrIntf resultExpr = new InstrIntegerLiteral(constResult.toString());
+            env.addInstr(resultExpr);
+            return resultExpr;
+        }
         return m_expr.codegen(env);
     }
 
@@ -26,5 +35,10 @@ public class ASTParantheseNode extends ASTExprNode {
         m_expr.print(outStream, indent);
         outStream.write("RPAREN");
         outStream.write("\n");
+    }
+
+    @Override
+    public Integer constFold() {
+        return m_expr.constFold();
     }
 }
