@@ -69,6 +69,7 @@ public class ASTSwitchNode extends ASTStmtNode{
 
             // Add condJump to active block
             InstrIntf condJump = new InstrCondJump(compare, blockCode, blockHelper);
+            env.addInstr(compare);
             env.addInstr(condJump);
 
             // Generate code of code block
