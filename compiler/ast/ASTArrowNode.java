@@ -26,8 +26,7 @@ public class ASTArrowNode extends ASTExprNode {
 
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
-        outStream.write(indent);
-        outStream.write("ARROWExpr ");
+        outStream.write(indent);outStream.write("ARROWExpr ");
         outStream.write("\n");
         m_lvalue.print(outStream, indent +" ");
         outStream.write(indent + " ");
@@ -37,10 +36,29 @@ public class ASTArrowNode extends ASTExprNode {
     }
     @Override
     public compiler.InstrIntf codegen(compiler.CompileEnvIntf compileEnv) {
+        if(this.constFold() != null){
+            compiler.InstrIntf resultExpr = new compiler.instr.InstrIntegerLiteral(this.constFold().toString());
+            compileEnv.addInstr(resultExpr);
+            return resultExpr;
+        }
         compiler.InstrIntf rhsExpr = m_rvalue.codegen(compileEnv);
         compiler.InstrIntf lhsExpr = m_lvalue.codegen(compileEnv);
         compiler.InstrIntf resultExpr =  new compiler.instr.InstrArrow(lhsExpr, rhsExpr);
         compileEnv.addInstr(resultExpr);
         return resultExpr;
+    }
+
+    @Override
+    public Integer constFold() {
+        Integer const_lresult = m_lvalue.constFold();
+        Integer const_rresult = m_rvalue.constFold();
+        if (const_lresult != null && const_rresult != null) {
+            if(const_lresult >= const_rresult) {
+                return const_lresult - const_rresult;
+            } else {
+                return const_lresult + const_rresult;
+            }
+        }
+        return null;
     }
 }

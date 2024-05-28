@@ -39,12 +39,41 @@ public class ASTAndOrExpr extends ASTExprNode {
             return lhs.eval() == 1 && rhs.eval() == 1 ? 1 : 0;
         }
     }
+
     @Override
     public InstrIntf codegen(CompileEnvIntf env) {
-        compiler.InstrIntf lhsExpr = lhs.codegen(env);
-        compiler.InstrIntf rhsExpr = rhs.codegen(env);
-        compiler.InstrIntf resultExpr = new compiler.instr.InstrAndOr(token.m_type, lhsExpr, rhsExpr);
+        Integer constFold = this.constFold();
+        compiler.InstrIntf resultExpr;
+        if (constFold != null) {
+            resultExpr = new compiler.instr.InstrIntegerLiteral(constFold.toString());
+        } else {
+            compiler.InstrIntf lhsExpr = lhs.codegen(env);
+            compiler.InstrIntf rhsExpr = rhs.codegen(env);
+            resultExpr = new compiler.instr.InstrAndOr(token.m_type, lhsExpr, rhsExpr);
+        }
         env.addInstr(resultExpr);
         return resultExpr;
+    }
+
+    public Integer constFold() {
+        // NULL, wenn nicht konstant, sonst den wert
+        Integer lhsConstFold = lhs.constFold();
+        Integer rhsConstFold = rhs.constFold();
+
+        if (token.m_type == Type.OR) {
+            if ((lhsConstFold != null && lhsConstFold == 1) || (rhsConstFold != null && rhsConstFold == 1)) {
+                return 1;
+            } else if (lhsConstFold != null && rhsConstFold != null && lhsConstFold == 0 && rhsConstFold == 0) {
+                return 0;
+            }
+        } else if (token.m_type == Type.AND) {
+            if (lhsConstFold != null && rhsConstFold != null && lhsConstFold == 1 && rhsConstFold == 1) {
+                return 1;
+            } else if ((lhsConstFold != null && lhsConstFold == 0) || (rhsConstFold != null && rhsConstFold == 0)) {
+                return 0;
+            }
+        }
+
+        return null;
     }
 }

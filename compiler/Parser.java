@@ -150,13 +150,24 @@ public class Parser {
         return result;
     }
 
+    ASTExprNode getSpaceshipExpr() throws Exception {
+        ASTExprNode result = getCompareExpr(); //lhsOperand
+        Token nextToken = m_lexer.lookAhead();
+        while(nextToken.m_type == Type.SPACESHIP) {
+            m_lexer.advance();
+            result = new ASTSpaceshipExprNode(result, getCompareExpr());
+            nextToken = m_lexer.lookAhead();
+        }
+        return result;
+    }
+
     ASTExprNode getAndOrExpr() throws Exception {
-        ASTExprNode left = getCompareExpr(); // lhsOperand
+        ASTExprNode left = getSpaceshipExpr(); // lhsOperand
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.AND || nextToken.m_type == TokenIntf.Type.OR) {
             // consume BITAND|BITOR
             m_lexer.advance();
-            ASTExprNode rhsOperand = getCompareExpr();
+            ASTExprNode rhsOperand = getSpaceshipExpr();
             left = new ASTAndOrExpr(nextToken, left, rhsOperand);
             nextToken = m_lexer.lookAhead();
         }
@@ -253,6 +264,12 @@ public class Parser {
             return getBlock2Stmt();
         }else if (nextToken.m_type == TokenIntf.Type.SWITCH) {
             return getSwitchStmt();
+        } else if (nextToken.m_type == TokenIntf.Type.NUMERIC_IF) {
+            return getNumericIf();
+        } else if (nextToken.m_type == Type.LOOP) {
+            return getLoopStmt();
+        } else if (nextToken.m_type == Type.BREAK) {
+            return getBreakStmt();
         }
         return null;
     }
@@ -325,5 +342,44 @@ public class Parser {
         m_lexer.expect(Type.DOUBLECOLON);
         List<ASTStmtNode> stmtList = getStmtList();
         return new ASTCaseNode(number, stmtList);
+    }
+  
+    ASTStmtNode getNumericIf() throws Exception {
+//        numeric_if: NUMERIC_IF LPAREN expr RPAREN pos neg zero
+//        pos: POSITIVE blockstmt
+//        neg: NEGATIVE blockstmt
+//        zero: ZERO blockstmt
+        m_lexer.expect(Type.NUMERIC_IF);
+        m_lexer.expect(Type.LPAREN);
+
+        ASTExprNode expr = getQuestionMarkExpr();
+
+        m_lexer.expect(Type.RPAREN);
+
+        m_lexer.expect(Type.POSITIVE);
+        ASTStmtNode pos = getBlockStmt();
+        m_lexer.expect(Type.NEGATIVE);
+        ASTStmtNode neg = getBlockStmt();
+        m_lexer.expect(Type.ZERO);
+        ASTStmtNode zero = getBlockStmt();
+
+
+        return new ASTNumericIfNode(expr, pos, neg, zero);
+    }
+    
+    ASTStmtNode getLoopStmt() throws Exception {
+        // LOOP blockStmt ENDLOOP
+        m_lexer.expect(Type.LOOP);
+        ASTStmtNode blockStmt = getBlockStmt();
+        m_lexer.expect(Type.ENDLOOP);
+        return new ASTLoopStmtNode(blockStmt);
+    }
+
+    ASTStmtNode getBreakStmt() throws Exception {
+        // BREAK SEMICOLON
+        m_lexer.expect(Type.BREAK);
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTBreakStmtNode();
+
     }
 }
