@@ -41,6 +41,6 @@ public class ASTDoWhileStmtNode extends ASTStmtNode {
         compiler.InstrIntf condJmp = new compiler.instr.InstrCondJump(condition, doWhileBlock, doWhileExit);
         env.addInstr(condJmp);
 
-        env.setCurrentBlock(doWhileBlock);
+        env.setCurrentBlock(doWhileExit);
     }
 }

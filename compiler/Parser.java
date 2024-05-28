@@ -350,23 +350,25 @@ public class Parser {
     }
 
     ASTStmtNode getWhileStmt() throws Exception {
-        // WHILE LPAREN expr RPAREN blockStmt
+        // WHILE LPAREN expr RPAREN blockStmt SEMICOLON
         m_lexer.expect(Type.WHILE);
         m_lexer.expect(Type.LPAREN);
         ASTExprNode expr = getQuestionMarkExpr();
         m_lexer.expect(Type.RPAREN);
         ASTStmtNode blockStmt = getBlockStmt();
+        m_lexer.expect(Type.SEMICOLON);
         return new ASTWhileStmtNode(blockStmt, expr);
     }
 
     ASTStmtNode getDoWhileStmt() throws Exception {
-        // DO blockstmt WHILE LPAREN expr RPAREN
+        // DO blockstmt WHILE LPAREN expr RPAREN SEMICOLON
         m_lexer.expect(Type.DO);
         ASTStmtNode blockStmt = getBlockStmt();
         m_lexer.expect(Type.WHILE);
         m_lexer.expect(Type.LPAREN);
         ASTExprNode expr = getQuestionMarkExpr();
         m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.SEMICOLON);
         return new ASTDoWhileStmtNode(blockStmt, expr);
     }
 }
