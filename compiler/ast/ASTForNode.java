@@ -41,6 +41,12 @@ public class ASTForNode extends ASTStmtNode {
 
     @Override
     public void execute() {
+        // Execute the before action
+        m_stmt_assign.execute();
+
+        while(m_stmt_condition.eval() == 1) {
+            m_stmt_action.execute();
+        }
     }
 
     @Override
@@ -66,6 +72,6 @@ public class ASTForNode extends ASTStmtNode {
         env.addInstr(new InstrJmp(forHeader));
 
         env.setCurrentBlock(forExit);
-        // TODO: ?
+        // Ende?
     }
 }
