@@ -5,7 +5,6 @@ import compiler.ast.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import javax.imageio.plugins.tiff.GeoTIFFTagSet;
 
 public class Parser {
     private Lexer m_lexer;
