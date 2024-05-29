@@ -359,6 +359,9 @@ public class Parser {
             return getFunctionStmt();
         }
 
+        m_lexer.throwCompilerException(
+            "Token " + nextToken.m_value + " does not start a statement",
+            "Statement");
         return null;
     }
 
@@ -404,6 +407,7 @@ public class Parser {
         ASTStmtNode returnStmt = new ASTReturnStmtNode(returnValue);
         m_lexer.expect(Type.SEMICOLON);
         return returnStmt;
+    }
 
     ASTStmtNode getExecuteNStmt() throws Exception {
         // EXECUTE QuestionMarkExpr TIMES BlockStmt SEMICOLON

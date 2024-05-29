@@ -23,7 +23,7 @@ public class InterpreterMain {
                     }
 
                     DECLARE e;
-                    e = CALL myFct1(1, 2) + CALL myFct3(40);
+                    e = CALL myFct1(1, 2) + CALL myFct3();
                     PRINT e;
                 }
                 """);
