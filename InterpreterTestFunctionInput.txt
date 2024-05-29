@@ -1,0 +1,61 @@
+$IN
+// FUNCTION Testprogramm 1
+{
+  FUNCTION myFct() {
+    RETURN 1;
+  };
+  PRINT CALL myFct();
+}
+$OUT
+1
+$IN
+// FUNCTION Testprogramm 2
+{
+    FUNCTION myFct1(a, b) {
+      RETURN a + b;
+    };
+    PRINT CALL myFct1(1, 2);
+}
+$OUT
+3
+$IN
+// FUNCTION Testprogramm 3
+{
+    FUNCTION myFct1(a, b) {
+      DECLARE c;
+      c = a + 2 * b;
+      RETURN c;
+    };
+    FUNCTION myFct2(d) {
+      RETURN d + 1;
+    };
+    DECLARE e;
+    e = CALL myFct1(1, 2) + CALL myFct2(3);
+    PRINT e;
+}
+$OUT
+9
+$IN
+// FUNCTION Testprogramm 4
+{
+    FUNCTION myFct1(a, b) {
+      RETURN a * b;
+    };
+    FUNCTION myFct2(c) {
+      RETURN CALL myFct1(c, c + 1);
+    };
+    PRINT CALL myFct2(5);
+}
+$OUT
+30
+$IN
+// FUNCTION Testprogramm 5
+{
+    // FUNCTION Testprogramm 3
+    FUNCTION myFct1(a, b) {
+      RETURN a*10+b;
+    }
+    PRINT CALL myFct1(1,2);
+}
+$OUT
+12
