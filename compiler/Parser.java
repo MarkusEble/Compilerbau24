@@ -253,6 +253,7 @@ public class Parser {
         // stmt: printStmt
         // stmt: declareStmt
         // stmt: assignStmt
+        // stmt: forStmt
         if (nextToken.m_type == TokenIntf.Type.PRINT) {
             return getPrintStmt();
         } else if (nextToken.m_type == TokenIntf.Type.DECLARE) {
@@ -263,6 +264,8 @@ public class Parser {
             return getBlock2Stmt();
         } else if (nextToken.m_type == TokenIntf.Type.EXECUTE) {
             return getExecuteNStmt();
+        } else if (nextToken.m_type == TokenIntf.Type.FOR) {
+            return getForStmt();
         }else if (nextToken.m_type == TokenIntf.Type.SWITCH) {
             return getSwitchStmt();
         } else if (nextToken.m_type == TokenIntf.Type.NUMERIC_IF) {
@@ -276,6 +279,7 @@ public class Parser {
         } else if (nextToken.m_type == Type.DO) {
             return getDoWhileStmt();
         }
+
         return null;
     }
 
@@ -420,4 +424,38 @@ public class Parser {
         m_lexer.expect(Type.SEMICOLON);
         return new ASTDoWhileStmtNode(blockStmt, expr);
     }
+
+    ASTStmtNode getForStmt() throws Exception {
+        /*
+            FOR_LOOP        := FOR LPAREN INITIALIZATION CONDITION SEMICOLON ACTION RPAREN L_CURLY_PAREN BLOCK R_CURLY_PAREN SEMICOLON
+            INITIALIZATION  := STATEMENT | epsilon
+            CONDITION       := EXPRESSION | epsilon
+            ACTION          := STATEMENT | epsilon
+        */
+
+        m_lexer.expect(Type.FOR);
+        m_lexer.expect(Type.LPAREN);
+
+        ASTStmtNode stmt = getStmt();
+        ASTExprNode expr = getQuestionMarkExpr();
+        m_lexer.expect(Type.SEMICOLON);
+        ASTStmtNode action = getStmt();
+
+        m_lexer.expect(Type.RPAREN);
+
+        // Block statement
+        ASTStmtNode block = getBlockStmt();
+
+        m_lexer.expect(Type.SEMICOLON);
+
+        return new ASTForNode(
+                stmt,
+                expr,
+                action,
+                block
+        );
+    }
+
+
+
 }
