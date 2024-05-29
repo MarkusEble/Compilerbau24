@@ -262,6 +262,8 @@ public class Parser {
             return getAssignStmt();
         } else if (nextToken.m_type == TokenIntf.Type.BLOCK) {
             return getBlock2Stmt();
+        } else if (nextToken.m_type == TokenIntf.Type.EXECUTE) {
+            return getExecuteNStmt();
         } else if (nextToken.m_type == TokenIntf.Type.FOR) {
             return getForStmt();
         }else if (nextToken.m_type == TokenIntf.Type.SWITCH) {
@@ -315,6 +317,16 @@ public class Parser {
         m_lexer.expect(Type.RBRACE);
 
         return new ASTBlock2StmtNode(stmts);
+    }
+
+    ASTStmtNode getExecuteNStmt() throws Exception {
+        // EXECUTE QuestionMarkExpr TIMES BlockStmt SEMICOLON
+        m_lexer.expect(Type.EXECUTE);
+        ASTExprNode mulDivExpr = getQuestionMarkExpr();
+        m_lexer.expect(Type.TIMES);
+        ASTStmtNode blockStmt = getBlockStmt();
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTExecuteNNode(mulDivExpr, blockStmt);
     }
 
     ASTStmtNode getSwitchStmt() throws Exception{
