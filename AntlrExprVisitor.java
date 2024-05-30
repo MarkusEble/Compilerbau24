@@ -3,7 +3,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-public class AntlrParseTreeMain {
+public class AntlrExprVisitor {
 
 	public static void main(String[] args) throws Exception {
 		// create input stream
@@ -17,7 +17,32 @@ public class AntlrParseTreeMain {
 		parser.setBuildParseTree(true);
 		// build parse tree
 		ParseTree tree = parser.expr();
-		// output parse tree
-		System.out.println(tree.toStringTree(parser));
+		// create visitor for expression evaluation
+		compiler.antlrvisitor.ExprEvalVisitor  exprEvalVisitor = new compiler.antlrvisitor.ExprEvalVisitor();
+		Integer result = exprEvalVisitor.visit(tree);
+		System.out.println(result);
 	}
+
+	// questionMarkExpr: andOrExpr;
+
+    // andOrExpr: cmpExpr;
+
+    // cmpExpr: shiftExpr;
+
+    // shiftExpr: bitAndOrExpr;
+
+    // bitAndOrExpr: sumExpr;
+
+    // sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
+
+    // mulDivExpr: unaryExpr;
+
+    // unaryExpr: dashExpr;
+
+    // dashExpr: arrowExpr;
+
+    // arrowExpr: parantheseExpr;
+
+    // parantheseExpr: NUMBER;
+
 }
