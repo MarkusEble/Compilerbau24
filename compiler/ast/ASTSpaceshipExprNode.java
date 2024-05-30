@@ -3,15 +3,15 @@ package compiler.ast;
 import compiler.CompileEnvIntf;
 import compiler.InstrIntf;
 import compiler.TokenIntf;
-import compiler.instr.InstrComp;
-import compiler.instr.InstrCondJump;
-import compiler.instr.InstrIntegerLiteral;
+import compiler.instr.*;
 
 import java.io.OutputStreamWriter;
 
 public class ASTSpaceshipExprNode extends ASTExprNode {
     public ASTExprNode m_rvalue;
     public ASTExprNode m_lvalue;
+
+    private static int symbolValue = 0;
 
     public ASTSpaceshipExprNode(ASTExprNode lCompareExpr, ASTExprNode rCompareExpr) {
         m_rvalue = rCompareExpr;
@@ -48,64 +48,68 @@ public class ASTSpaceshipExprNode extends ASTExprNode {
 
     @Override
     public InstrIntf codegen(CompileEnvIntf compileEnv) {
-        // codegen der beiden Seiten die miteinander verglichen werden sollen
+        //init local variable
+        compiler.Symbol resultSymbol = compileEnv.getSymbolTable().createSymbol("$resultSpace" + symbolValue);
+
+        // Codegen for lhs and rhs + init intern Variable
         compiler.InstrIntf lexprInstr = m_lvalue.codegen(compileEnv);
         compiler.InstrIntf rexprInstr = m_rvalue.codegen(compileEnv);
+        compiler.InstrIntf resultInstr = new InstrVariableExpr(resultSymbol.m_name);
+       /* compiler.InstrIntf assignResult = new InstrAssign(resultValue, resultInstr);*/
 
-        //Init Jumpblöcke
+        //Init jumpblocks
         compiler.InstrBlock greaterBlock = compileEnv.createBlock("GREATER");
         compiler.InstrBlock lessOrEquBlock = compileEnv.createBlock("LESSOREQUAL");
         compiler.InstrBlock lesserBlock = compileEnv.createBlock("LESSER");
         compiler.InstrBlock equalBlock = compileEnv.createBlock("EQUAL");
         compiler.InstrBlock exitBlock = compileEnv.createBlock("EXIT");
 
+        //jump exit
         compiler.InstrIntf jmpExit = new compiler.instr.InstrJmp(exitBlock);
 
-        //Compare, if l>r
-        compiler.InstrIntf compareGreater = new InstrComp(lexprInstr, rexprInstr, TokenIntf.Type.GREATER);
-        compiler.InstrIntf jmpPositive = new InstrCondJump(compareGreater, greaterBlock, lessOrEquBlock);
-        //compare, if l<r
-        compiler.InstrIntf compareLess = new InstrComp(lexprInstr, rexprInstr, TokenIntf.Type.LESS);
-        compiler.InstrIntf jmpNegative = new InstrCondJump(compareLess, lesserBlock, equalBlock);
-
-        //Schritt 1: linke und rechte Seite Codegenerieren
+        //Adding first Instr to env
         compileEnv.addInstr(lexprInstr);
         compileEnv.addInstr(rexprInstr);
+        compileEnv.addInstr(resultInstr);
+        //compileEnv.addInstr(assignResult);
 
-        //Schritt 2: Vergleich ob l>r
+        //compare if lhs > rhs + jump condition
+        compiler.InstrIntf compareGreater = new InstrComp(lexprInstr, rexprInstr, TokenIntf.Type.GREATER);
+        compiler.InstrIntf jmpPositive = new InstrCondJump(compareGreater, greaterBlock, lessOrEquBlock);
         compileEnv.addInstr(compareGreater);
         compileEnv.addInstr(jmpPositive);
 
-        //Schritt 3: Wenn gößer dann 1 zurückgeben
+        //jump to greaterBlock
         compileEnv.setCurrentBlock(greaterBlock);
-        greaterBlock.addInstr(new InstrIntegerLiteral("1"));
-
-        //compiler.InstrIntf resultExpr = greaterLiteral.codegen(compileEnv);
-        //TODO: hier muss der Wert zurückgegeben werden irgendwie
+        compiler.InstrIntf resultValueGreater = new InstrAssign(resultSymbol, new InstrIntegerLiteral("1"));
+        greaterBlock.addInstr(resultValueGreater);
         compileEnv.addInstr(jmpExit);
 
-        //Schritt 4: Vergleich ob l<r, wenn true dann in LesserBlock springen ansonsten in equalBlock springen
+
+        //compare if lhs < rhs + jump condition
+        compiler.InstrIntf compareLess = new InstrComp(lexprInstr, rexprInstr, TokenIntf.Type.LESS);
+        compiler.InstrIntf jmpNegative = new InstrCondJump(compareLess, lesserBlock, equalBlock);
         compileEnv.setCurrentBlock(lessOrEquBlock);
         compileEnv.addInstr(compareLess);
         compileEnv.addInstr(jmpNegative);
 
-        //SChritt 5: Wenn kleiner dann -1 zurückgeben
+        //jump to lesserBlock
         compileEnv.setCurrentBlock(lesserBlock);
-        lesserBlock.addInstr(new InstrIntegerLiteral("-1"));
-        ASTIntegerLiteralNode("-1").codegen(compileEnv);
-//        lesserLiteral.codegen(compileEnv);
+        compiler.InstrIntf resultValueLesser = new InstrAssign(resultSymbol, new InstrIntegerLiteral("-1"));
+        lesserBlock.addInstr(resultValueLesser);
         compileEnv.addInstr(jmpExit);
 
-        //Schritt 6: beide Werte gleich, dann 0 zurückgeben
+        //jump to equalBlock
         compileEnv.setCurrentBlock(equalBlock);
-        equalBlock.addInstr(new InstrIntegerLiteral("0"));
-        //equalLiteral.codegen(compileEnv);
+        compiler.InstrIntf resultValueEqual = new InstrAssign(resultSymbol, new InstrIntegerLiteral("0"));
+        equalBlock.addInstr(resultValueEqual);
         compileEnv.addInstr(jmpExit);
 
-        //exit
+        //jump exitBlock
         compileEnv.setCurrentBlock(exitBlock);
+        compiler.InstrIntf loadResult = new InstrVariableExpr(resultSymbol.m_name);
 
-        return lexprInstr;
+        return loadResult;
     }
 
 }
