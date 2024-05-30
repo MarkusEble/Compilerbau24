@@ -1,5 +1,7 @@
 package compiler.instr;
 
+import compiler.InstrBlock;
+import compiler.InstrIntf;
 import java.io.OutputStreamWriter;
 
 import compiler.ExecutionEnvIntf;
@@ -10,6 +12,7 @@ public class InstrCondJump extends compiler.InstrIntf {
     compiler.InstrIntf m_cond;
     compiler.InstrBlock m_trueBlock;
     compiler.InstrBlock m_falseBlock;
+
 
     public InstrCondJump(InstrIntf m_cond, InstrBlock m_trueBlock, InstrBlock m_falseBlock) {
         this.m_cond = m_cond;
@@ -35,5 +38,4 @@ public class InstrCondJump extends compiler.InstrIntf {
         os.write(m_falseBlock.getName());
         os.write("\n");
     }
-
 }

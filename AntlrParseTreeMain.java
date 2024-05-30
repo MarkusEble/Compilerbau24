@@ -3,7 +3,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-public class AntlrParseTreeMain {
+/*public class AntlrParseTreeMain {
 
 	public static void main(String[] args) throws Exception {
 		// create input stream
@@ -20,4 +20,4 @@ public class AntlrParseTreeMain {
 		// output parse tree
 		System.out.println(tree.toStringTree(parser));
 	}
-}
+}*/

@@ -14,6 +14,7 @@ public class InstrPrint extends compiler.InstrIntf {
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
         env.getOutputStream().write(Integer.toString(m_expr.getValue()));
+        env.getOutputStream().write("\n");
     }
 
     @Override
