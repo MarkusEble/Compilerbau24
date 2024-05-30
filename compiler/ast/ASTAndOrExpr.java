@@ -43,13 +43,42 @@ public class ASTAndOrExpr extends ASTExprNode {
     @Override
     public InstrIntf codegen(CompileEnvIntf env) {
         Integer constFold = this.constFold();
-        compiler.InstrIntf resultExpr;
+        compiler.InstrIntf resultExpr = null;
         if (constFold != null) {
             resultExpr = new compiler.instr.InstrIntegerLiteral(constFold.toString());
         } else {
-            compiler.InstrIntf lhsExpr = lhs.codegen(env);
-            compiler.InstrIntf rhsExpr = rhs.codegen(env);
-            resultExpr = new compiler.instr.InstrAndOr(token.m_type, lhsExpr, rhsExpr);
+            compiler.InstrIntf lhsExpr;
+            Integer lhsConst = lhs.constFold();
+            if(token.m_type == Type.OR){
+                if (lhsConst == null){
+                    lhsExpr = lhs.codegen(env);
+                }else if(lhsConst == 0){
+                    lhsExpr = new compiler.instr.InstrIntegerLiteral("0");
+                } else { // 1
+                    resultExpr = new compiler.instr.InstrIntegerLiteral("1");
+                    lhsExpr = new compiler.instr.InstrIntegerLiteral("1"); // Compiler error without
+                }
+            } else { // AND
+                if(lhsConst == null){
+                    lhsExpr = lhs.codegen(env);
+                }else if(lhsConst == 0 ){
+                    lhsExpr = new compiler.instr.InstrIntegerLiteral("1"); // Compiler error without
+                    resultExpr = new compiler.instr.InstrIntegerLiteral("0");
+                }else { // 1
+                    lhsExpr = new compiler.instr.InstrIntegerLiteral("1");
+                }
+            }
+            
+            if(resultExpr == null){
+                Integer rhsConst = rhs.constFold();
+                compiler.InstrIntf rhsExpr = null;
+                if(rhsConst == null){
+                    rhsExpr = rhs.codegen(env);
+                } else {
+                    rhsExpr = new compiler.instr.InstrIntegerLiteral(rhsConst.toString());
+                }
+                resultExpr = new compiler.instr.InstrAndOr(token.m_type, lhsExpr,rhsExpr);
+            }
         }
         env.addInstr(resultExpr);
         return resultExpr;

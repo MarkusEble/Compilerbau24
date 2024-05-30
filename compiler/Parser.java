@@ -161,10 +161,9 @@ public class Parser {
     }
 
     ASTExprNode getAndOrExpr() throws Exception {
-        ASTExprNode left = getSpaceshipExpr(); // lhsOperand
+        ASTExprNode left = getSpaceshipExpr();
         Token nextToken = m_lexer.lookAhead();
         while (nextToken.m_type == TokenIntf.Type.AND || nextToken.m_type == TokenIntf.Type.OR) {
-            // consume BITAND|BITOR
             m_lexer.advance();
             ASTExprNode rhsOperand = getSpaceshipExpr();
             left = new ASTAndOrExpr(nextToken, left, rhsOperand);
