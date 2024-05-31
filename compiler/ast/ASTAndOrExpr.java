@@ -6,11 +6,12 @@ import compiler.CompileEnvIntf;
 import compiler.InstrIntf;
 import compiler.Token;
 import compiler.TokenIntf.Type;
+import compiler.instr.InstrCondJump;
 
 public class ASTAndOrExpr extends ASTExprNode {
     ASTExprNode lhs, rhs;
     Token token;
-
+    private static int symbolCount = 0;
     public ASTAndOrExpr(Token or, ASTExprNode left, ASTExprNode right) {
         this.lhs = left;
         this.token = or;
@@ -43,45 +44,29 @@ public class ASTAndOrExpr extends ASTExprNode {
     @Override
     public InstrIntf codegen(CompileEnvIntf env) {
         Integer constFold = this.constFold();
-        compiler.InstrIntf resultExpr = null;
+        int counter = symbolCount++;
+        String symName = "$AND_OR" + (counter);
+        compiler.Symbol returnVal = env.getSymbolTable().createSymbol(symName);
         if (constFold != null) {
-            resultExpr = new compiler.instr.InstrIntegerLiteral(constFold.toString());
+            env.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral(constFold.toString())));
         } else {
-            compiler.InstrIntf lhsExpr;
-            Integer lhsConst = lhs.constFold();
+            compiler.InstrIntf lhsExpr = lhs.codegen(env);
+            compiler.InstrIntf rhsExpr = rhs.codegen(env);
+            compiler.InstrBlock retFalse = env.createBlock("RET_FALSE");
+            compiler.InstrBlock retTrue = env.createBlock("RET_TRUE");
+            compiler.InstrBlock cal = env.createBlock("CAL");
+            retTrue.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("1")));
+            retFalse.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("0")));
+            cal.addInstr(new compiler.instr.InstrAndOr(token.m_type, lhsExpr, rhsExpr));
             if(token.m_type == Type.OR){
-                if (lhsConst == null){
-                    lhsExpr = lhs.codegen(env);
-                }else if(lhsConst == 0){
-                    lhsExpr = new compiler.instr.InstrIntegerLiteral("0");
-                } else { // 1
-                    resultExpr = new compiler.instr.InstrIntegerLiteral("1");
-                    lhsExpr = new compiler.instr.InstrIntegerLiteral("1"); // Compiler error without
-                }
-            } else { // AND
-                if(lhsConst == null){
-                    lhsExpr = lhs.codegen(env);
-                }else if(lhsConst == 0 ){
-                    lhsExpr = new compiler.instr.InstrIntegerLiteral("1"); // Compiler error without
-                    resultExpr = new compiler.instr.InstrIntegerLiteral("0");
-                }else { // 1
-                    lhsExpr = new compiler.instr.InstrIntegerLiteral("1");
-                }
-            }
-            
-            if(resultExpr == null){
-                Integer rhsConst = rhs.constFold();
-                compiler.InstrIntf rhsExpr = null;
-                if(rhsConst == null){
-                    rhsExpr = rhs.codegen(env);
-                } else {
-                    rhsExpr = new compiler.instr.InstrIntegerLiteral(rhsConst.toString());
-                }
-                resultExpr = new compiler.instr.InstrAndOr(token.m_type, lhsExpr,rhsExpr);
+                compiler.InstrIntf cmp = new compiler.instr.InstrCondJump(lhsExpr, retTrue,cal);
+                env.addInstr(cmp);
+            } else {
+                compiler.InstrIntf cmp = new compiler.instr.InstrCondJump(new compiler.instr.InstrUnary(Type.NOT, lhsExpr), retTrue,cal);
+                env.addInstr(cmp);
             }
         }
-        env.addInstr(resultExpr);
-        return resultExpr;
+        return new compiler.instr.InstrVariableExpr(symName);
     }
 
     public Integer constFold() {
