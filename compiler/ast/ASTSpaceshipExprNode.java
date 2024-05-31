@@ -50,12 +50,11 @@ public class ASTSpaceshipExprNode extends ASTExprNode {
     public InstrIntf codegen(CompileEnvIntf compileEnv) {
         //init local variable
         compiler.Symbol resultSymbol = compileEnv.getSymbolTable().createSymbol("$resultSpace" + symbolValue);
+        symbolValue++;
 
         // Codegen for lhs and rhs + init intern Variable
         compiler.InstrIntf lexprInstr = m_lvalue.codegen(compileEnv);
         compiler.InstrIntf rexprInstr = m_rvalue.codegen(compileEnv);
-        compiler.InstrIntf resultInstr = new InstrVariableExpr(resultSymbol.m_name);
-       /* compiler.InstrIntf assignResult = new InstrAssign(resultValue, resultInstr);*/
 
         //Init jumpblocks
         compiler.InstrBlock greaterBlock = compileEnv.createBlock("GREATER");
@@ -67,15 +66,10 @@ public class ASTSpaceshipExprNode extends ASTExprNode {
         //jump exit
         compiler.InstrIntf jmpExit = new compiler.instr.InstrJmp(exitBlock);
 
-        //Adding first Instr to env
-        compileEnv.addInstr(lexprInstr);
-        compileEnv.addInstr(rexprInstr);
-        compileEnv.addInstr(resultInstr);
-        //compileEnv.addInstr(assignResult);
-
         //compare if lhs > rhs + jump condition
         compiler.InstrIntf compareGreater = new InstrComp(lexprInstr, rexprInstr, TokenIntf.Type.GREATER);
         compiler.InstrIntf jmpPositive = new InstrCondJump(compareGreater, greaterBlock, lessOrEquBlock);
+
         compileEnv.addInstr(compareGreater);
         compileEnv.addInstr(jmpPositive);
 
@@ -84,7 +78,6 @@ public class ASTSpaceshipExprNode extends ASTExprNode {
         compiler.InstrIntf resultValueGreater = new InstrAssign(resultSymbol, new InstrIntegerLiteral("1"));
         greaterBlock.addInstr(resultValueGreater);
         compileEnv.addInstr(jmpExit);
-
 
         //compare if lhs < rhs + jump condition
         compiler.InstrIntf compareLess = new InstrComp(lexprInstr, rexprInstr, TokenIntf.Type.LESS);
@@ -108,6 +101,7 @@ public class ASTSpaceshipExprNode extends ASTExprNode {
         //jump exitBlock
         compileEnv.setCurrentBlock(exitBlock);
         compiler.InstrIntf loadResult = new InstrVariableExpr(resultSymbol.m_name);
+        exitBlock.addInstr(loadResult);
 
         return loadResult;
     }
