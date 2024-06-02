@@ -49,23 +49,17 @@ public class ASTAndOrExpr extends ASTExprNode {
         String symName = "$AND_OR" + (counter);
         compiler.Symbol returnVal = env.getSymbolTable().createSymbol(symName);
         compiler.InstrBlock retBlock = env.createBlock("RET");
-        if (constFold != null && false) {
+        if (constFold != null) {
             env.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral(constFold.toString())));
         } else {
             compiler.InstrIntf lhsExpr = lhs.codegen(env);
             compiler.InstrIntf rhsExpr = rhs.codegen(env);
 
             compiler.InstrBlock assignTrue = env.createBlock("assignTrue");
-            assignTrue.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("1")));
-            assignTrue.addInstr(new compiler.instr.InstrJmp(retBlock));
-            compiler.InstrBlock assignFalse = env.createBlock("assignFalse");
-            assignFalse.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("0")));
-            assignFalse.addInstr(new compiler.instr.InstrJmp(retBlock));
-
             compiler.InstrBlock calBlock = env.createBlock("cal");
-            calBlock.addInstr(rhsExpr);
-            calBlock.addInstr(new compiler.instr.InstrJmp(retBlock));
-
+            compiler.InstrBlock assignFalse = env.createBlock("assignFalse");
+            
+            
             if(token.m_type == Type.OR){
                 compiler.InstrIntf cmp = new compiler.instr.InstrCondJump(lhsExpr, assignTrue, calBlock);
                 env.addInstr(cmp);
@@ -73,8 +67,18 @@ public class ASTAndOrExpr extends ASTExprNode {
                 compiler.InstrIntf cmp = new compiler.instr.InstrCondJump(new compiler.instr.InstrUnary(Type.NOT, lhsExpr), assignTrue,calBlock);
                 env.addInstr(cmp);
             }
+            env.setCurrentBlock(calBlock);
+            calBlock.addInstr(rhsExpr);
+            calBlock.addInstr(new compiler.instr.InstrJmp(retBlock));
+            env.setCurrentBlock(assignTrue);
+            assignTrue.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("1")));
+            assignTrue.addInstr(new compiler.instr.InstrJmp(retBlock));
+            
+            env.setCurrentBlock(assignFalse);
+            assignFalse.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("0")));
+            assignFalse.addInstr(new compiler.instr.InstrJmp(retBlock));
         }
-
+        env.setCurrentBlock(retBlock);
         compiler.InstrIntf r = new compiler.instr.InstrVariableExpr(symName);
         retBlock.addInstr(r);
         return r;
@@ -82,8 +86,8 @@ public class ASTAndOrExpr extends ASTExprNode {
 
     public Integer constFold() {
         // NULL, wenn nicht konstant, sonst den wert
-        Integer lhsConstFold = lhs.constFold();
-        Integer rhsConstFold = rhs.constFold();
+        // Integer lhsConstFold = lhs.constFold();
+        // Integer rhsConstFold = rhs.constFold();
         
         // if (token.m_type == Type.OR) {
         //     if ((lhsConstFold != null && lhsConstFold == 1) || (rhsConstFold != null && rhsConstFold == 1)) {
