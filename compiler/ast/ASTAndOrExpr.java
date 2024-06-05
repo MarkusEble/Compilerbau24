@@ -45,31 +45,30 @@ public class ASTAndOrExpr extends ASTExprNode {
     @Override
     public InstrIntf codegen(CompileEnvIntf env) {
         Integer constFold = this.constFold();
-        int counter = symbolCount++;
-        String symName = "$AND_OR" + (counter);
-        compiler.Symbol returnVal = env.getSymbolTable().createSymbol(symName);
+        compiler.Symbol returnVal = env.getSymbolTable().createSymbol("$AND_OR_SHORT" + (symbolCount++));
+        compiler.Symbol lhsRetVal = env.getSymbolTable().createSymbol("$AND_OR_SHORT" + (symbolCount++));
+        compiler.InstrBlock assignTrue = env.createBlock("assignTrue");
+        compiler.InstrBlock calBlock = env.createBlock("cal");
+        compiler.InstrBlock assignFalse = env.createBlock("assignFalse");
         compiler.InstrBlock retBlock = env.createBlock("RET");
         if (constFold != null) {
             env.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral(constFold.toString())));
+            env.addInstr(new compiler.instr.InstrJmp(retBlock));
         } else {
             compiler.InstrIntf lhsExpr = lhs.codegen(env);
-            compiler.InstrIntf rhsExpr = rhs.codegen(env);
-
-            compiler.InstrBlock assignTrue = env.createBlock("assignTrue");
-            compiler.InstrBlock calBlock = env.createBlock("cal");
-            compiler.InstrBlock assignFalse = env.createBlock("assignFalse");
-            
-            
+            env.addInstr(new compiler.instr.InstrAssign(lhsRetVal, lhsExpr));
+            compiler.InstrIntf lhrResValRead = new compiler.instr.InstrVariableExpr(lhsRetVal.m_name);
+            env.addInstr(lhrResValRead);
             if(token.m_type == Type.OR){
-                compiler.InstrIntf cmp = new compiler.instr.InstrCondJump(lhsExpr, assignTrue, calBlock);
-                env.addInstr(cmp);
+                env.addInstr(new compiler.instr.InstrCondJump(lhrResValRead, assignTrue, calBlock));
             } else {
-                compiler.InstrIntf cmp = new compiler.instr.InstrCondJump(new compiler.instr.InstrUnary(Type.NOT, lhsExpr), assignTrue,calBlock);
-                env.addInstr(cmp);
+                env.addInstr(new compiler.instr.InstrCondJump(lhrResValRead, calBlock, assignFalse));
             }
             env.setCurrentBlock(calBlock);
-            calBlock.addInstr(rhsExpr);
+            compiler.InstrIntf rhsExpr = rhs.codegen(env);
+            calBlock.addInstr(new compiler.instr.InstrAssign( returnVal ,new compiler.instr.InstrAndOr(token.m_type, new compiler.instr.InstrVariableExpr(lhsRetVal.m_name), rhsExpr)));
             calBlock.addInstr(new compiler.instr.InstrJmp(retBlock));
+
             env.setCurrentBlock(assignTrue);
             assignTrue.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("1")));
             assignTrue.addInstr(new compiler.instr.InstrJmp(retBlock));
@@ -79,29 +78,29 @@ public class ASTAndOrExpr extends ASTExprNode {
             assignFalse.addInstr(new compiler.instr.InstrJmp(retBlock));
         }
         env.setCurrentBlock(retBlock);
-        compiler.InstrIntf r = new compiler.instr.InstrVariableExpr(symName);
+        compiler.InstrIntf r = new compiler.instr.InstrVariableExpr(returnVal.m_name);
         retBlock.addInstr(r);
         return r;
     }
 
     public Integer constFold() {
         // NULL, wenn nicht konstant, sonst den wert
-        // Integer lhsConstFold = lhs.constFold();
-        // Integer rhsConstFold = rhs.constFold();
+        Integer lhsConstFold = lhs.constFold();
+        Integer rhsConstFold = rhs.constFold();
         
-        // if (token.m_type == Type.OR) {
-        //     if ((lhsConstFold != null && lhsConstFold == 1) || (rhsConstFold != null && rhsConstFold == 1)) {
-        //         return 1;
-        //     } else if (lhsConstFold != null && rhsConstFold != null && lhsConstFold == 0 && rhsConstFold == 0) {
-        //         return 0;
-        //     }
-        // } else if (token.m_type == Type.AND) {
-        //     if (lhsConstFold != null && rhsConstFold != null && lhsConstFold == 1 && rhsConstFold == 1) {
-        //         return 1;
-        //     } else if ((lhsConstFold != null && lhsConstFold == 0) || (rhsConstFold != null && rhsConstFold == 0)) {
-        //         return 0;
-        //     }
-        // }
+        if (token.m_type == Type.OR) {
+            if ((lhsConstFold != null && lhsConstFold == 1) || (rhsConstFold != null && rhsConstFold == 1)) {
+                return 1;
+            } else if (lhsConstFold != null && rhsConstFold != null && lhsConstFold == 0 && rhsConstFold == 0) {
+                return 0;
+            }
+        } else if (token.m_type == Type.AND) {
+            if (lhsConstFold != null && rhsConstFold != null && lhsConstFold == 1 && rhsConstFold == 1) {
+                return 1;
+            } else if ((lhsConstFold != null && lhsConstFold == 0) || (rhsConstFold != null && rhsConstFold == 0)) {
+                return 0;
+            }
+        }
 
         return null;
     }
