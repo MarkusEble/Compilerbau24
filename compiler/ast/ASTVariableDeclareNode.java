@@ -1,5 +1,6 @@
 package compiler.ast;
 
+import compiler.CompileEnvIntf;
 import compiler.Symbol;
 import compiler.SymbolTableIntf;
 
@@ -21,4 +22,5 @@ public class ASTVariableDeclareNode extends ASTStmtNode{
         outStream.write(indent + "DECLARE " + this.symbol.m_name);
         outStream.write("\n");
     }
+
 }
