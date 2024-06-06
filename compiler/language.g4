@@ -17,7 +17,8 @@ cmpExpr: shiftExpr;
 
 shiftExpr: bitAndOrExpr;
 
-bitAndOrExpr: sumExpr;
+// plusMinusExpr ((BITAND | BITOR) plusMinusExpr)*
+bitAndOrExpr: sumExpr ((BITAND | BITOR) sumExpr)*;
 
 sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
 
@@ -49,6 +50,8 @@ NUMBER: [0-9]+;
 SUMOP: PLUS|MINUS;
 PLUS: '+';
 MINUS: '-';
+BITOR: '|';
+BITAND: '&';
 
 // mulDivExpr tokens
 
