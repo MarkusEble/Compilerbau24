@@ -3,9 +3,8 @@ grammar language;
 // rules
 
 // minimal expression 
-expr: NUMBER (SUMOP  NUMBER)*;
+start: questionMarkExpr EOF;
 
-/*
 // start symbol
 expr: questionMarkExpr;
 
@@ -24,14 +23,15 @@ sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
 
 mulDivExpr: unaryExpr;
 
-unaryExpr: dashExpr;
+unaryExpr: (INVERTER)? dashExpr;
 
 dashExpr: arrowExpr;
 
 arrowExpr: parantheseExpr (ARROW parantheseExpr)*;
 
 parantheseExpr: NUMBER;
-*/
+
+
 // tokens
 NUMBER: [0-9]+;
 
@@ -53,6 +53,7 @@ MINUS: '-';
 // mulDivExpr tokens
 
 // unaryExpr tokens
+INVERTER: '!';
 
 // dashExpr tokens
 
