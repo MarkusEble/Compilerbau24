@@ -13,7 +13,7 @@ questionMarkExpr: andOrExpr;
 
 andOrExpr: cmpExpr;
 
-cmpExpr: shiftExpr;
+cmpExpr: shiftExpr (mulDivExpr (GREATER|EQUAL|LESS) mulDivExpr); 
 
 shiftExpr: bitAndOrExpr;
 
@@ -40,6 +40,9 @@ NUMBER: [0-9]+;
 // andOrExpr tokens
 
 // cmpExpr tokens
+GREATER: '>';
+EQUAL: '=';
+LESS: '<';
 
 // shiftExpr tokens
 
@@ -62,4 +65,3 @@ MINUS: '-';
 
 // skip whitespaces
 WS: [ \t\r\n]+ -> skip;
-
