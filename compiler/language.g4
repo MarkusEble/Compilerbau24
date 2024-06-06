@@ -11,7 +11,7 @@ expr: questionMarkExpr;
 // expressions
 questionMarkExpr: andOrExpr;
 
-andOrExpr: cmpExpr;
+andOrExpr: cmpExpr ANDOROP cmpExpr | andOrExpr ANDOROP cmpExpr;
 
 cmpExpr: shiftExpr;
 
@@ -38,7 +38,9 @@ NUMBER: [0-9]+;
 // questionMarkExpr tokens
 
 // andOrExpr tokens
-
+ANDOROP: AND|OR;
+AND: '&&';
+OR: '||';
 // cmpExpr tokens
 
 // shiftExpr tokens
