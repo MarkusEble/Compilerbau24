@@ -3,9 +3,9 @@ grammar language;
 // rules
 
 // minimal expression 
-expr: NUMBER (SUMOP  NUMBER)*;
+// expr: NUMBER (SUMOP  NUMBER)*;
 
-/*
+
 // start symbol
 expr: questionMarkExpr;
 
@@ -16,7 +16,7 @@ andOrExpr: cmpExpr;
 
 cmpExpr: shiftExpr;
 
-shiftExpr: bitAndOrExpr;
+shiftExpr: bitAndOrExpr (SHIFTOP bitAndOrExpr)*;
 
 bitAndOrExpr: sumExpr;
 
@@ -31,7 +31,7 @@ dashExpr: arrowExpr;
 arrowExpr: parantheseExpr;
 
 parantheseExpr: NUMBER;
-*/
+
 // tokens
 NUMBER: [0-9]+;
 
@@ -49,6 +49,10 @@ NUMBER: [0-9]+;
 SUMOP: PLUS|MINUS;
 PLUS: '+';
 MINUS: '-';
+SHIFTOP: SHIFTLEFT|SHIFTRIGHT;
+SHIFTLEFT: '<<';
+SHIFTRIGHT: '>>';
+
 
 // mulDivExpr tokens
 
