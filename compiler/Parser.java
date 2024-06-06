@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static compiler.TokenIntf.Type.IF;
+
 public class Parser {
     private Lexer m_lexer;
     private SymbolTableIntf m_symbolTable;
@@ -352,6 +354,8 @@ public class Parser {
             return getWhileStmt();
         } else if (nextToken.m_type == Type.DO) {
             return getDoWhileStmt();
+        } else if (nextToken.m_type == Type.IF) {
+            return getIfStmt();
         } else if (nextToken.m_type == Type.RETURN) {
             return getReturnStmt();
         } else if (nextToken.m_type == Type.FUNCTION) {
@@ -514,6 +518,27 @@ public class Parser {
         return new ASTDoWhileStmtNode(blockStmt, expr);
     }
 
+    ASTStmtNode getIfStmt() throws Exception {
+        m_lexer.expect(IF);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode cond = getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        ASTStmtNode trueBlock = getBlockStmt();
+        if (m_lexer.lookAhead().m_type == Type.ELSE) {
+            m_lexer.advance();
+            if (m_lexer.lookAhead().m_type == Type.LBRACE) {
+                ASTStmtNode falseBlock = getBlockStmt();
+                return new ASTIfStmtNode(cond, trueBlock, falseBlock);
+            }
+
+            if (m_lexer.lookAhead().m_type == IF) {
+                ASTStmtNode elseIf = getIfStmt();
+                return new ASTIfStmtNode(cond, trueBlock, elseIf);
+            }
+        }
+        return new ASTIfStmtNode(cond, trueBlock, null);
+
+    }
     ASTStmtNode getForStmt() throws Exception {
         /*
             FOR_LOOP        := FOR LPAREN INITIALIZATION CONDITION SEMICOLON ACTION RPAREN L_CURLY_PAREN BLOCK R_CURLY_PAREN SEMICOLON
