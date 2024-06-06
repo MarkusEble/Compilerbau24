@@ -3,9 +3,8 @@ grammar language;
 // rules
 
 // minimal expression 
-expr: NUMBER (SUMOP  NUMBER)*;
+start: questionMarkExpr EOF;
 
-/*
 // start symbol
 expr: questionMarkExpr;
 
@@ -31,7 +30,8 @@ dashExpr: arrowExpr;
 arrowExpr: parantheseExpr;
 
 parantheseExpr: NUMBER;
-*/
+
+
 // tokens
 NUMBER: [0-9]+;
 
