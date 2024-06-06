@@ -30,7 +30,7 @@ dashExpr: arrowExpr (DASH arrowExpr)*;
 
 arrowExpr: parantheseExpr (ARROW parantheseExpr)*;
 
-parantheseExpr: NUMBER;
+parantheseExpr: NUMBER | varExpr | LPAREN questionMarkExpr RPAREN;
 
 // tokens
 NUMBER: [0-9]+;
@@ -75,6 +75,8 @@ DASH: '^';
 // arrowExpr tokens
 ARROW: '->';
 // parantheseExpr tokens
+LPAREN: '(';
+RPAREN: ')';
 
 // skip whitespaces
 WS: [ \t\r\n]+ -> skip;
