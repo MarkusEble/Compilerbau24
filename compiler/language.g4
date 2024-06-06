@@ -28,7 +28,7 @@ unaryExpr: dashExpr;
 
 dashExpr: arrowExpr;
 
-arrowExpr: parantheseExpr;
+arrowExpr: parantheseExpr (ARROW parantheseExpr)*;
 
 parantheseExpr: NUMBER;
 */
@@ -57,7 +57,7 @@ MINUS: '-';
 // dashExpr tokens
 
 // arrowExpr tokens
-
+ARROW: '->';
 // parantheseExpr tokens
 
 // skip whitespaces
