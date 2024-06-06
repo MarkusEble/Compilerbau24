@@ -25,7 +25,7 @@ mulDivExpr: unaryExpr;
 
 unaryExpr: (INVERTER)? dashExpr;
 
-dashExpr: arrowExpr;
+dashExpr: arrowExpr (DASH arrowExpr)*;
 
 arrowExpr: parantheseExpr;
 
@@ -56,6 +56,7 @@ MINUS: '-';
 INVERTER: '!';
 
 // dashExpr tokens
+DASH: '^';
 
 // arrowExpr tokens
 
