@@ -28,7 +28,7 @@ unaryExpr: (INVERTER)? dashExpr;
 
 dashExpr: arrowExpr;
 
-arrowExpr: parantheseExpr;
+arrowExpr: parantheseExpr (ARROW parantheseExpr)*;
 
 parantheseExpr: NUMBER;
 
@@ -64,7 +64,7 @@ INVERTER: '!';
 // dashExpr tokens
 
 // arrowExpr tokens
-
+ARROW: '->';
 // parantheseExpr tokens
 
 // skip whitespaces
