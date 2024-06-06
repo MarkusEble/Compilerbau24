@@ -418,7 +418,7 @@ public class Parser {
         m_lexer.expect(Type.LPAREN);
         ASTExprNode cond = getQuestionMarkExpr();
         m_lexer.expect(Type.RPAREN);
-        ASTBlockStmtNode trueBlock = getBlockStmt();
+        ASTStmtNode trueBlock = getBlockStmt();
         if (m_lexer.lookAhead().m_type == Type.ELSE) {
             m_lexer.advance();
             if (m_lexer.lookAhead().m_type == Type.LBRACE) {

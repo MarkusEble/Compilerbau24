@@ -12,7 +12,7 @@ public class ASTIfStmtNode extends ASTStmtNode{
     public ASTStmtNode trueBlock;
     public ASTStmtNode restChild;
 
-    public ASTIfStmtNode(ASTExprNode condition, ASTBlockStmtNode trueBlock, ASTStmtNode elseBlock){
+    public ASTIfStmtNode(ASTExprNode condition, ASTStmtNode trueBlock, ASTStmtNode elseBlock){
         this.cond = condition;
         this.trueBlock = trueBlock;
         this.restChild = elseBlock;
