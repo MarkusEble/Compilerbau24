@@ -12,7 +12,7 @@ expr: questionMarkExpr;
 // expressions
 questionMarkExpr: andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)*;
 
-andOrExpr: cmpExpr;
+andOrExpr: cmpExpr ANDOROP cmpExpr | andOrExpr ANDOROP cmpExpr;
 
 cmpExpr: shiftExpr (mulDivExpr (GREATER|EQUAL|LESS) mulDivExpr); 
 
@@ -40,7 +40,9 @@ QUESTIONMARK: '?';
 DOUBLECOLON: ':';
 
 // andOrExpr tokens
-
+ANDOROP: AND|OR;
+AND: '&&';
+OR: '||';
 // cmpExpr tokens
 GREATER: '>';
 EQUAL: '=';
