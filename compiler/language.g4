@@ -10,7 +10,7 @@ start: questionMarkExpr EOF;
 expr: questionMarkExpr;
 
 // expressions
-questionMarkExpr: andOrExpr;
+questionMarkExpr: andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)*;
 
 andOrExpr: cmpExpr;
 
@@ -36,6 +36,8 @@ parantheseExpr: NUMBER;
 NUMBER: [0-9]+;
 
 // questionMarkExpr tokens
+QUESTIONMARK: '?';
+DOUBLECOLON: ':';
 
 // andOrExpr tokens
 
