@@ -22,7 +22,7 @@ bitAndOrExpr: sumExpr;
 
 sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
 
-mulDivExpr: unaryExpr;
+mulDivExpr: unaryExpr (MULDIVOP unaryExpr)*;
 
 unaryExpr: (INVERTER)? dashExpr;
 
@@ -62,6 +62,9 @@ SHIFTRIGHT: '>>';
 
 
 // mulDivExpr tokens
+MULDIVOP: MUL | DIV;
+MUL: '*';
+DIV: '/';
 
 // unaryExpr tokens
 INVERTER: '!';
