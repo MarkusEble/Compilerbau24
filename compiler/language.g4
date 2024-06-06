@@ -24,7 +24,7 @@ sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
 
 mulDivExpr: unaryExpr;
 
-unaryExpr: dashExpr;
+unaryExpr: (INVERTER)? dashExpr;
 
 dashExpr: arrowExpr;
 
@@ -57,6 +57,7 @@ SHIFTRIGHT: '>>';
 // mulDivExpr tokens
 
 // unaryExpr tokens
+INVERTER: '!';
 
 // dashExpr tokens
 
