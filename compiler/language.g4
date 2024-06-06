@@ -29,7 +29,7 @@ dashExpr: arrowExpr;
 
 arrowExpr: parantheseExpr;
 
-parantheseExpr: NUMBER;
+parantheseExpr: NUMBER | varExpr | LPAREN questionMarkExpr RPAREN;
 
 
 // tokens
@@ -60,6 +60,8 @@ INVERTER: '!';
 // arrowExpr tokens
 
 // parantheseExpr tokens
+LPAREN: '(';
+RPAREN: ')';
 
 // skip whitespaces
 WS: [ \t\r\n]+ -> skip;
