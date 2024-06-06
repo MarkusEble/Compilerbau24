@@ -3,7 +3,7 @@ package compiler.antlrvisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import compiler.antlrcompiler.languageParser.ExprContext;
-
+/*
 public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<Integer> {
 
     public Integer visitExpr(ExprContext ctx) {
@@ -31,3 +31,4 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
     }
 
 }
+*/
