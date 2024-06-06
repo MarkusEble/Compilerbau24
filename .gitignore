@@ -4,3 +4,4 @@ out/
 .vscode/
 compiler/.antlr/
 compiler/antlrcompiler
+*.class
