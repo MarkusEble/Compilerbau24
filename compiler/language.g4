@@ -3,7 +3,7 @@ grammar language;
 // rules
 
 // minimal expression 
-// expr: NUMBER (SUMOP  NUMBER)*;
+start: questionMarkExpr EOF;
 
 
 // start symbol
