@@ -14,7 +14,7 @@ questionMarkExpr: andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionM
 
 andOrExpr: cmpExpr;
 
-cmpExpr: shiftExpr;
+cmpExpr: shiftExpr (mulDivExpr (GREATER|EQUAL|LESS) mulDivExpr); 
 
 shiftExpr: bitAndOrExpr (SHIFTOP bitAndOrExpr)*;
 
@@ -42,6 +42,9 @@ DOUBLECOLON: ':';
 // andOrExpr tokens
 
 // cmpExpr tokens
+GREATER: '>';
+EQUAL: '=';
+LESS: '<';
 
 // shiftExpr tokens
 
@@ -69,4 +72,3 @@ ARROW: '->';
 
 // skip whitespaces
 WS: [ \t\r\n]+ -> skip;
-
