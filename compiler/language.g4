@@ -18,7 +18,8 @@ cmpExpr: shiftExpr (mulDivExpr (GREATER|EQUAL|LESS) mulDivExpr);
 
 shiftExpr: bitAndOrExpr (SHIFTOP bitAndOrExpr)*;
 
-bitAndOrExpr: sumExpr;
+// plusMinusExpr ((BITAND | BITOR) plusMinusExpr)*
+bitAndOrExpr: sumExpr ((BITAND | BITOR) sumExpr)*;
 
 sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
 
@@ -43,23 +44,25 @@ DOUBLECOLON: ':';
 ANDOROP: AND|OR;
 AND: '&&';
 OR: '||';
+
 // cmpExpr tokens
 GREATER: '>';
 EQUAL: '=';
 LESS: '<';
 
 // shiftExpr tokens
+SHIFTOP: SHIFTLEFT|SHIFTRIGHT;
+SHIFTLEFT: '<<';
+SHIFTRIGHT: '>>';
 
 // bitAndOrExpr tokens
+BITOR: '|';
+BITAND: '&';
 
 // sumExpr tokens
 SUMOP: PLUS|MINUS;
 PLUS: '+';
 MINUS: '-';
-SHIFTOP: SHIFTLEFT|SHIFTRIGHT;
-SHIFTLEFT: '<<';
-SHIFTRIGHT: '>>';
-
 
 // mulDivExpr tokens
 MULDIVOP: MUL | DIV;
