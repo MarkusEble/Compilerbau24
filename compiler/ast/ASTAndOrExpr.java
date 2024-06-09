@@ -47,12 +47,27 @@ public class ASTAndOrExpr extends ASTExprNode {
         Integer constFold = this.constFold();
         compiler.Symbol returnVal = env.getSymbolTable().createSymbol("$AND_OR_SHORT" + (symbolCount++));
         compiler.Symbol lhsRetVal = env.getSymbolTable().createSymbol("$AND_OR_SHORT" + (symbolCount++));
-        compiler.InstrBlock assignTrue = env.createBlock("assignTrue");
-        compiler.InstrBlock calBlock = env.createBlock("cal");
-        compiler.InstrBlock assignFalse = env.createBlock("assignFalse");
-        compiler.InstrBlock retBlock = env.createBlock("RET");
+        compiler.InstrBlock calBlock = null, assignTrue = null, assignFalse = null;
+        compiler.InstrBlock retBlock;
+
+        // Create Blocks -> Ret block is in the end of these instructions.
+        if(constFold != null) {
+            retBlock = env.createBlock("RET");
+        } else {
+            calBlock = env.createBlock("cal");
+            if (token.m_type == Type.OR) {
+                assignTrue = env.createBlock("assignTrue");
+            } else {
+                assignFalse = env.createBlock("assignFalse");
+            }
+            retBlock = env.createBlock("RET");
+        }
+
+        // Add instructions to blocks
         if (constFold != null) {
-            env.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral(constFold.toString())));
+            compiler.InstrIntf loadConst  = new compiler.instr.InstrIntegerLiteral(constFold.toString());
+            env.addInstr(loadConst);
+            env.addInstr(new compiler.instr.InstrAssign(returnVal, loadConst));
             env.addInstr(new compiler.instr.InstrJmp(retBlock));
         } else {
             compiler.InstrIntf lhsExpr = lhs.codegen(env);
@@ -60,22 +75,34 @@ public class ASTAndOrExpr extends ASTExprNode {
             compiler.InstrIntf lhrResValRead = new compiler.instr.InstrVariableExpr(lhsRetVal.m_name);
             env.addInstr(lhrResValRead);
             if(token.m_type == Type.OR){
+                
                 env.addInstr(new compiler.instr.InstrCondJump(lhrResValRead, assignTrue, calBlock));
+                
+                env.setCurrentBlock(assignTrue);
+                compiler.InstrIntf trueLit =  new compiler.instr.InstrIntegerLiteral("1");
+                assignTrue.addInstr(trueLit);
+                assignTrue.addInstr(new compiler.instr.InstrAssign(returnVal, trueLit));
+                assignTrue.addInstr(new compiler.instr.InstrJmp(retBlock));
+                
             } else {
                 env.addInstr(new compiler.instr.InstrCondJump(lhrResValRead, calBlock, assignFalse));
+                
+                env.setCurrentBlock(assignFalse);
+                compiler.InstrIntf falseLit = new compiler.instr.InstrIntegerLiteral("0");
+                assignFalse.addInstr(falseLit);
+                assignFalse.addInstr(new compiler.instr.InstrAssign(returnVal, falseLit));
+                assignFalse.addInstr(new compiler.instr.InstrJmp(retBlock));
             }
             env.setCurrentBlock(calBlock);
             compiler.InstrIntf rhsExpr = rhs.codegen(env);
-            calBlock.addInstr(new compiler.instr.InstrAssign( returnVal ,new compiler.instr.InstrAndOr(token.m_type, new compiler.instr.InstrVariableExpr(lhsRetVal.m_name), rhsExpr)));
+            compiler.InstrIntf loadLhs = new compiler.instr.InstrVariableExpr(lhsRetVal.m_name);
+            compiler.InstrIntf compare = new compiler.instr.InstrAndOr(token.m_type, loadLhs, rhsExpr);
+            calBlock.addInstr(loadLhs);
+            calBlock.addInstr(compare);
+            calBlock.addInstr(new compiler.instr.InstrAssign( returnVal , compare));
             calBlock.addInstr(new compiler.instr.InstrJmp(retBlock));
 
-            env.setCurrentBlock(assignTrue);
-            assignTrue.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("1")));
-            assignTrue.addInstr(new compiler.instr.InstrJmp(retBlock));
             
-            env.setCurrentBlock(assignFalse);
-            assignFalse.addInstr(new compiler.instr.InstrAssign(returnVal, new compiler.instr.InstrIntegerLiteral("0")));
-            assignFalse.addInstr(new compiler.instr.InstrJmp(retBlock));
         }
         env.setCurrentBlock(retBlock);
         compiler.InstrIntf r = new compiler.instr.InstrVariableExpr(returnVal.m_name);
