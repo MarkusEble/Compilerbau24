@@ -3,47 +3,61 @@ grammar language;
 // rules
 
 // minimal expression 
-expr: NUMBER (SUMOP  NUMBER)*;
+start: questionMarkExpr EOF;
 
-/*
+
 // start symbol
 expr: questionMarkExpr;
 
 // expressions
-questionMarkExpr: andOrExpr;
+questionMarkExpr: andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)*;
 
-andOrExpr: cmpExpr;
+andOrExpr: cmpExpr ANDOROP cmpExpr | andOrExpr ANDOROP cmpExpr;
 
-cmpExpr: shiftExpr;
+cmpExpr: shiftExpr (mulDivExpr (GREATER|EQUAL|LESS) mulDivExpr); 
 
-shiftExpr: bitAndOrExpr;
+shiftExpr: bitAndOrExpr (SHIFTOP bitAndOrExpr)*;
 
-bitAndOrExpr: sumExpr;
+// plusMinusExpr ((BITAND | BITOR) plusMinusExpr)*
+bitAndOrExpr: sumExpr ((BITAND | BITOR) sumExpr)*;
 
 sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
 
-mulDivExpr: unaryExpr;
+mulDivExpr: unaryExpr (MULDIVOP unaryExpr)*;
 
-unaryExpr: dashExpr;
+unaryExpr: (INVERTER)? dashExpr;
 
-dashExpr: arrowExpr;
+dashExpr: arrowExpr (DASH arrowExpr)*;
 
-arrowExpr: parantheseExpr;
+arrowExpr: parantheseExpr (ARROW parantheseExpr)*;
 
-parantheseExpr: NUMBER;
-*/
+parantheseExpr: NUMBER | varExpr | LPAREN questionMarkExpr RPAREN;
+
 // tokens
 NUMBER: [0-9]+;
 
 // questionMarkExpr tokens
+QUESTIONMARK: '?';
+DOUBLECOLON: ':';
 
 // andOrExpr tokens
+ANDOROP: AND|OR;
+AND: '&&';
+OR: '||';
 
 // cmpExpr tokens
+GREATER: '>';
+EQUAL: '=';
+LESS: '<';
 
 // shiftExpr tokens
+SHIFTOP: SHIFTLEFT|SHIFTRIGHT;
+SHIFTLEFT: '<<';
+SHIFTRIGHT: '>>';
 
 // bitAndOrExpr tokens
+BITOR: '|';
+BITAND: '&';
 
 // sumExpr tokens
 SUMOP: PLUS|MINUS;
@@ -51,15 +65,21 @@ PLUS: '+';
 MINUS: '-';
 
 // mulDivExpr tokens
+MULDIVOP: MUL | DIV;
+MUL: '*';
+DIV: '/';
 
 // unaryExpr tokens
+INVERTER: '!';
 
 // dashExpr tokens
+DASH: '^';
 
 // arrowExpr tokens
-
+ARROW: '->';
 // parantheseExpr tokens
+LPAREN: '(';
+RPAREN: ')';
 
 // skip whitespaces
 WS: [ \t\r\n]+ -> skip;
-
