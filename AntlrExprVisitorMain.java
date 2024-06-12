@@ -3,7 +3,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-public class AntlrExprVisitor {
+public class AntlrExprVisitorMain {
 
 	public static void main(String[] args) throws Exception {
 		// create input stream
@@ -22,27 +22,5 @@ public class AntlrExprVisitor {
 		Integer result = exprEvalVisitor.visit(tree);
 		System.out.println(result);
 	}
-
-	// questionMarkExpr: andOrExpr;
-
-    // andOrExpr: cmpExpr;
-
-    // cmpExpr: shiftExpr;
-
-    // shiftExpr: bitAndOrExpr;
-
-    // bitAndOrExpr: sumExpr;
-
-    // sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
-
-    // mulDivExpr: unaryExpr;
-
-    // unaryExpr: dashExpr;
-
-    // dashExpr: arrowExpr;
-
-    // arrowExpr: parantheseExpr;
-
-    // parantheseExpr: NUMBER;
 
 }

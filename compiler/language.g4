@@ -12,13 +12,12 @@ expr: questionMarkExpr;
 // expressions
 questionMarkExpr: andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)*;
 
-andOrExpr: cmpExpr ANDOROP cmpExpr | andOrExpr ANDOROP cmpExpr;
+andOrExpr: cmpExpr (ANDOROP cmpExpr)*;
 
-cmpExpr: shiftExpr (mulDivExpr (GREATER|EQUAL|LESS) mulDivExpr); 
+cmpExpr: shiftExpr ((GREATER|EQUAL|LESS) shiftExpr)*; 
 
 shiftExpr: bitAndOrExpr (SHIFTOP bitAndOrExpr)*;
 
-// plusMinusExpr ((BITAND | BITOR) plusMinusExpr)*
 bitAndOrExpr: sumExpr ((BITAND | BITOR) sumExpr)*;
 
 sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
@@ -33,8 +32,11 @@ arrowExpr: parantheseExpr (ARROW parantheseExpr)*;
 
 parantheseExpr: NUMBER | varExpr | LPAREN questionMarkExpr RPAREN;
 
+varExpr: IDENT;
+
 // tokens
 NUMBER: [0-9]+;
+IDENT: [a-z]+;
 
 // questionMarkExpr tokens
 QUESTIONMARK: '?';
