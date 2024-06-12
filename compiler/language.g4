@@ -30,7 +30,7 @@ dashExpr: arrowExpr (DASH arrowExpr)*;
 
 arrowExpr: parantheseExpr (ARROW parantheseExpr)*;
 
-parantheseExpr: NUMBER | varExpr | LPAREN questionMarkExpr RPAREN;
+parantheseExpr: NUMBER #Number | varExpr #Variable | LPAREN questionMarkExpr RPAREN #Paranthese;
 
 varExpr: IDENT;
 
