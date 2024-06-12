@@ -1,10 +1,12 @@
 package compiler.antlrvisitor;
 
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<Integer> {
+public class ExprEvalListener extends compiler.antlrcompiler.languageBaseListener {    
+    public ParseTreeProperty<Integer> m_values = new ParseTreeProperty<Integer>();
 
-	  // questionMarkExpr: andOrExpr;
+	// questionMarkExpr: andOrExpr;
 
     // andOrExpr: cmpExpr;
 
@@ -15,19 +17,19 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
     // bitAndOrExpr: sumExpr;
 
     // sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
-    public Integer visitSumExpr(compiler.antlrcompiler.languageParser.SumExprContext ctx) {
+    public void exitSumExpr(compiler.antlrcompiler.languageParser.SumExprContext ctx) {
         int cnt = ctx.getChildCount();
         int curChildIdx = 0;
         int curNumberIdx = 0;
         int curOpIdx = 0;
-        int curResult = visitMulDivExpr(ctx.mulDivExpr(0));
+        int curResult = m_values.get(ctx.mulDivExpr(0));
         curChildIdx++;
         curNumberIdx++;
         while (curChildIdx < cnt) {
           TerminalNode nextOp = ctx.SUMOP(curOpIdx);
           curOpIdx++;
           curChildIdx++;
-          int nextNumber = visitMulDivExpr(ctx.mulDivExpr(curNumberIdx));
+          int nextNumber = m_values.get(ctx.mulDivExpr(curNumberIdx));
           if (nextOp.getText().equals("+")) {
             curResult += nextNumber;
           } else {
@@ -36,7 +38,7 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
           curNumberIdx++;
           curChildIdx++;
         }
-        return curResult;
+        m_values.put(ctx, curResult);
     }
 
     // mulDivExpr: unaryExpr;
@@ -47,8 +49,9 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
 
     // arrowExpr: parantheseExpr;
 
-    // parantheseExpr: NUMBER;
-    public Integer visitNumber(compiler.antlrcompiler.languageParser.NumberContext ctx) {
-      return Integer.valueOf(ctx.NUMBER().getText());
-  }
+    // parantheseExpr: NUMBER; 
+    public void exitNumber(compiler.antlrcompiler.languageParser.NumberContext ctx) {
+        m_values.put(ctx, Integer.valueOf(ctx.NUMBER().getText()));
+    }
+
 }
