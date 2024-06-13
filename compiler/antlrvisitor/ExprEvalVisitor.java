@@ -11,6 +11,29 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
     // cmpExpr: shiftExpr;
 
     // shiftExpr: bitAndOrExpr;
+    public Integer visitShiftExpr(compiler.antlrcompiler.languageParser.ShiftExprContext ctx) {
+        int cnt = ctx.getChildCount();
+        int curChildIdx = 0;
+        int curNumberIdx = 0;
+        int curOpIdx = 0;
+        int curResult = visitBitAndOrExpr(ctx.bitAndOrExpr(0));
+        curChildIdx++;
+        curNumberIdx++;
+        while (curChildIdx < cnt) {
+            TerminalNode nextOp = ctx.SHIFTOP(curOpIdx);
+            curOpIdx++;
+            curChildIdx++;
+            int nextNumber = visitBitAndOrExpr(ctx.bitAndOrExpr(curNumberIdx));
+            if (nextOp.getText().equals("<<")) {
+                curResult = curResult << nextNumber;
+            } else {
+                curResult = curResult >> nextNumber;
+            }
+            curNumberIdx++;
+            curChildIdx++;
+        }
+        return curResult;
+    }
 
     // bitAndOrExpr: sumExpr;
 
