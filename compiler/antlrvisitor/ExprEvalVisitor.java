@@ -1,5 +1,6 @@
 package compiler.antlrvisitor;
 
+import compiler.antlrcompiler.languageParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<Integer> {
@@ -50,5 +51,9 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
     // parantheseExpr: NUMBER;
     public Integer visitNumber(compiler.antlrcompiler.languageParser.NumberContext ctx) {
       return Integer.valueOf(ctx.NUMBER().getText());
+  }
+  
+  public Integer visitParentheseExpr(languageParser.ParantheseContext ctx) {
+        return visitQuestionMarkExpr(ctx.questionMarkExpr());
   }
 }
