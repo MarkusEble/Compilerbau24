@@ -18,7 +18,7 @@ cmpExpr: shiftExpr ((GREATER|EQUAL|LESS) shiftExpr)*;
 
 shiftExpr: bitAndOrExpr (SHIFTOP bitAndOrExpr)*;
 
-bitAndOrExpr: sumExpr ((BITAND | BITOR) sumExpr)*;
+bitAndOrExpr: sumExpr (BITOP sumExpr)*;
 
 sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
 
@@ -58,6 +58,7 @@ SHIFTLEFT: '<<';
 SHIFTRIGHT: '>>';
 
 // bitAndOrExpr tokens
+BITOP: BITAND | BITOR;
 BITOR: '|';
 BITAND: '&';
 

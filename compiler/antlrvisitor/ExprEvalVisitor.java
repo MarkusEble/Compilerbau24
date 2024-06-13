@@ -1,5 +1,6 @@
 package compiler.antlrvisitor;
 
+import compiler.antlrcompiler.languageParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<Integer> {
@@ -12,7 +13,30 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
 
     // shiftExpr: bitAndOrExpr;
 
-    // bitAndOrExpr: sumExpr;
+    // bitAndOrExpr: sumExpr (BITOP sumExpr)*;
+    public Integer visitBitAndOrExpr(languageParser.BitAndOrExprContext ctx) {
+        int cnt = ctx.getChildCount();
+        int curChildIdx = 0;
+        int curNumberIdx = 0;
+        int curOpIdx = 0;
+        int curResult = visitSumExpr(ctx.sumExpr(0));
+        curChildIdx++;
+        curNumberIdx++;
+        while (curChildIdx < cnt) {
+          TerminalNode nextOp = ctx.BITOP(curOpIdx);
+          curOpIdx++;
+          curChildIdx++;
+          int nextNumber = visitSumExpr(ctx.sumExpr(curNumberIdx));
+          if (nextOp.getText().equals("&")) {
+            curResult &= nextNumber;
+          } else {
+            curResult |= nextNumber;
+          }
+          curNumberIdx++;
+          curChildIdx++;
+        }
+        return curResult;
+    }
 
     // sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
     public Integer visitSumExpr(compiler.antlrcompiler.languageParser.SumExprContext ctx) {
