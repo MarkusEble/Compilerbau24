@@ -10,7 +10,7 @@ start: questionMarkExpr EOF;
 expr: questionMarkExpr;
 
 // expressions
-questionMarkExpr: andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)*;
+questionMarkExpr: andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)?;
 
 andOrExpr: cmpExpr (ANDOROP cmpExpr)*;
 

@@ -1,10 +1,24 @@
 package compiler.antlrvisitor;
 
+import compiler.antlrcompiler.languageParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<Integer> {
 
 	  // questionMarkExpr: andOrExpr;
+    public Integer visitQuestionMarkExpr(languageParser.QuestionMarkExprContext ctx){
+        // andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)?;
+        int cnt = ctx.getChildCount();
+        int curExpressionResult = visitAndOrExpr(ctx.andOrExpr());
+        if (cnt > 1){
+            if (curExpressionResult != 0){
+                return visitQuestionMarkExpr(ctx.questionMarkExpr(1));
+            } else {
+                return visitQuestionMarkExpr(ctx.questionMarkExpr(2));
+            }
+        }
+        return curExpressionResult;
+    }
 
     // andOrExpr: cmpExpr;
 
