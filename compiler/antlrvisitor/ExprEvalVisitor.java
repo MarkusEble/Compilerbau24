@@ -153,4 +153,8 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
     public Integer visitNumber(compiler.antlrcompiler.languageParser.NumberContext ctx) {
       return Integer.valueOf(ctx.NUMBER().getText());
   }
+  
+  public Integer visitParentheseExpr(languageParser.ParantheseContext ctx) {
+        return visitQuestionMarkExpr(ctx.questionMarkExpr());
+  }
 }
