@@ -1,5 +1,6 @@
 package compiler.antlrvisitor;
 
+import compiler.antlrcompiler.languageParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<Integer> {
@@ -42,6 +43,9 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
     // mulDivExpr: unaryExpr;
 
     // unaryExpr: dashExpr;
+    public Integer visitUnaryExpr(languageParser.UnaryExprContext ctx) {
+        return visitDashExpr(ctx.dashExpr()) == 1 ? 1 : 0;
+    }
 
     // dashExpr: arrowExpr;
 
