@@ -15,7 +15,30 @@ public class ExprEvalListener extends compiler.antlrcompiler.languageBaseListene
 
     // shiftExpr: bitAndOrExpr;
 
-    // bitAndOrExpr: sumExpr;
+    // bitAndOrExpr: sumExpr (BITOP sumExpr)*;
+    public void exitBitAndOrExpr(languageParser.BitAndOrExprContext ctx) {
+        int cnt = ctx.getChildCount();
+        int curChildIdx = 0;
+        int curNumberIdx = 0;
+        int curOpIdx = 0;
+        int curResult = m_values.get(ctx.sumExpr(0));
+        curChildIdx++;
+        curNumberIdx++;
+        while (curChildIdx < cnt) {
+          TerminalNode nextOp = ctx.BITOP(curOpIdx);
+          curOpIdx++;
+          curChildIdx++;
+          int nextNumber = m_values.get(ctx.sumExpr(curNumberIdx));
+          if (nextOp.getText().equals("&")) {
+            curResult &= nextNumber;
+          } else {
+            curResult |= nextNumber;
+          }
+          curNumberIdx++;
+          curChildIdx++;
+        }
+        m_values.put(ctx, curResult);
+    }
 
     // sumExpr: mulDivExpr (SUMOP  mulDivExpr)*;
     public void exitSumExpr(compiler.antlrcompiler.languageParser.SumExprContext ctx) {
