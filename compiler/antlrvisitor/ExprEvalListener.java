@@ -12,6 +12,29 @@ public class ExprEvalListener extends compiler.antlrcompiler.languageBaseListene
     // andOrExpr: cmpExpr;
 
     // cmpExpr: shiftExpr;
+    public void exitShiftExpr(languageParser.ShiftExprContext ctx) {
+        int cnt = ctx.getChildCount();
+        int curChildIdx = 0;
+        int curNumberIdx = 0;
+        int curOpIdx = 0;
+        int curResult = m_values.get(ctx.bitAndOrExpr(0));
+        curChildIdx++;
+        curNumberIdx++;
+        while (curChildIdx < cnt) {
+            TerminalNode nextOp = ctx.SHIFTOP(curOpIdx);
+            curOpIdx++;
+            curChildIdx++;
+            int nextNumber = m_values.get(ctx.bitAndOrExpr(curNumberIdx));
+            if (nextOp.getText().equals("<<")) {
+                curResult = curResult << nextNumber;
+            } else {
+                curResult = curResult >> nextNumber;
+            }
+            curNumberIdx++;
+            curChildIdx++;
+        }
+        m_values.put(ctx, curResult);
+    }
 
     // shiftExpr: bitAndOrExpr;
 
