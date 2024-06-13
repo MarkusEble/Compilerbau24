@@ -1,5 +1,6 @@
 package compiler.antlrvisitor;
 
+import compiler.antlrcompiler.languageParser;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -44,6 +45,9 @@ public class ExprEvalListener extends compiler.antlrcompiler.languageBaseListene
     // mulDivExpr: unaryExpr;
 
     // unaryExpr: dashExpr;
+    public void exitUnaryExpr(languageParser.UnaryExprContext ctx) {
+        m_values.put(ctx, m_values.get(ctx.dashExpr()) == 1 ? 1 : 0);
+    }
 
     // dashExpr: arrowExpr;
 
