@@ -18,7 +18,7 @@ public class ExprAstVisitor extends compiler.antlrcompiler.languageBaseVisitor<c
 
     // mulDivExpr: unaryExpr;
 
-    // unaryExpr: dashExpr;
+    // unaryExpr: arrowExpr (DASH arrowExpr)*;
 
     // dashExpr: arrowExpr;
 

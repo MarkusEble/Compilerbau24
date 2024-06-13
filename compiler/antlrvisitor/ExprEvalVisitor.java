@@ -71,6 +71,22 @@ public class ExprEvalVisitor extends compiler.antlrcompiler.languageBaseVisitor<
     }
 
     // dashExpr: arrowExpr;
+    public Integer visitDashExpr(languageParser.DashExprContext ctx) {
+        int cnt = ctx.getChildCount();
+        int curChildIdx = 0;
+        int curNumberIdx = 0;
+        double curResult = visitArrowExpr(ctx.arrowExpr(0));
+        curChildIdx++;
+        curNumberIdx++;
+        while (curChildIdx < cnt) {
+            curChildIdx++;
+            int nextNumber = visitArrowExpr(ctx.arrowExpr(curNumberIdx));
+            curResult = Math.pow(curResult, nextNumber);
+            curNumberIdx++;
+            curChildIdx++;
+        }
+        return (int) curResult;
+    }
 
     // arrowExpr: parantheseExpr;
 

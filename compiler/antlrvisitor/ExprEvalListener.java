@@ -73,6 +73,22 @@ public class ExprEvalListener extends compiler.antlrcompiler.languageBaseListene
     }
 
     // dashExpr: arrowExpr;
+    public void exitDashExpr(languageParser.DashExprContext ctx) {
+        int cnt = ctx.getChildCount();
+        int curChildIdx = 0;
+        int curNumberIdx = 0;
+        double curResult = m_values.get(ctx.arrowExpr(0));
+        curChildIdx++;
+        curNumberIdx++;
+        while (curChildIdx < cnt) {
+            curChildIdx++;
+            int nextNumber = m_values.get(ctx.arrowExpr(curNumberIdx));
+            curResult = Math.pow(curResult, nextNumber);
+            curNumberIdx++;
+            curChildIdx++;
+        }
+        m_values.put(ctx, (int) curResult);
+    }
 
     // arrowExpr: parantheseExpr;
 
